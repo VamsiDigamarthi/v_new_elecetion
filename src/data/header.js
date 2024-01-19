@@ -1,17 +1,14 @@
 import axios from "axios";
 
-let headers = new Headers();
+export let headers = new Headers();
 headers.append("Content-Type", "application/json");
 headers.append("Accept", "application/json");
 
-headers.append("Access-Control-Allow-Origin", "*");
+headers.append("Access-Control-Allow-Origin", "http://localhost:3000");
 headers.append("Access-Control-Allow-Credentials", "true");
 
 headers.append("GET", "POST", "PUT", "DELETE", "OPTIONS");
 
-const API = axios.create({ baseURL: "http://localhost:5000" });
-
-export const logIn = (FormData) =>
-  API.post("/login", FormData, {
-    headers: headers,
-  });
+export const APIS = axios.create({
+  baseURL: "http://localhost:5000",
+});

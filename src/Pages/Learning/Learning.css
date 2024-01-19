@@ -7,6 +7,18 @@
   /* border: 2px solid red; */
 }
 
+.quize__text__contra {
+  font-family: "Tangerine", cursive;
+  font-size: 60px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .quize__text__contra {
+    font-size: 42px;
+  }
+}
+
 .video__card {
   display: flex;
   flex-direction: column;
@@ -15,17 +27,41 @@
   height: 80vh;
   width: 100%;
   gap: 2rem;
+  overflow-y: scroll;
   /* border: 2px solid red; */
 }
 
-.video__card > div {
+.video__player__multi__card {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  /* border: 2px solid red; */
+}
+
+.video__player__multi__card > div {
+  width: 46%;
+  /* border: 2px solid red; */
+}
+
+@media (max-width: 768px) {
+  .video__player__multi__card {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .video__player__multi__card > div {
+    width: 100%;
+    /* border: 2px solid red; */
+  }
+}
+
+.video__card > .video__to__quize__div {
   width: 80%;
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
 }
 
-.video__card > div > button {
+.video__to__quize__div > button {
   width: 190px;
   height: 40px;
   background-color: #ff5c41;
@@ -70,13 +106,20 @@
 }
 
 .questions__number__card > div {
-  background-color: aqua;
   padding: 12px;
   border-radius: 50%;
   color: lightslategray;
 }
-.questions__number__card > :nth-child(4) {
+
+.currect__question {
+  background-color: aqua;
+}
+.next__qustion {
   background-color: #3c515c;
+}
+
+/* .questions__number__card > :nth-child(4) {
+ 
 }
 .questions__number__card > :nth-child(5) {
   background-color: #3c515c;
@@ -95,7 +138,7 @@
 }
 .questions__number__card > :nth-child(10) {
   background-color: #3c515c;
-}
+} */
 
 .question__card__main {
   height: 80%;
@@ -150,6 +193,7 @@
 }
 .a_quize_cardssss > :nth-child(2) {
   border-radius: 30px;
+  min-width: 200px;
 }
 
 @media (max-width: 768px) {

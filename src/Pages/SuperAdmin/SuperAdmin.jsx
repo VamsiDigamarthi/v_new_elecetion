@@ -6,7 +6,9 @@ import TableUi from "../TableUi/TableUi";
 
 const SuperAdmin = () => {
   const [tabsView, setTabsView] = useState(1);
-  // console.log(tabsView);
+
+  // all user fetch where sroce is grether than equal to 8
+
   return (
     <div className="super__admin__main__card">
       <span className="all__pages__over__view">Over View</span>

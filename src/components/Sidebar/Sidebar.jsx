@@ -7,10 +7,13 @@ import { TbClearAll } from "react-icons/tb";
 import { FiUsers } from "react-icons/fi";
 import { BsListTask } from "react-icons/bs";
 import { CgLogOut } from "react-icons/cg";
+import { useDispatch, useSelector } from "react-redux";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
+import { logout } from "../../action/AuthAction";
 export const Sidebar = ({ children }) => {
+  const UUU = useSelector((state) => state.authReducer.authData);
   const [leftOpenState, setLeftOpenState] = useState(false);
   const location = useLocation();
   const pathValue = location.pathname;
@@ -21,7 +24,10 @@ export const Sidebar = ({ children }) => {
   const onSidebarCloseWheneHamClick = () => {
     setLeftOpenState(false);
   };
-
+  const dispatch = useDispatch();
+  const handleLogOut = () => {
+    dispatch(logout());
+  };
   // side left container
 
   const sideLeftContainer = {
@@ -36,19 +42,19 @@ export const Sidebar = ({ children }) => {
   };
   // side right container
 
-  const sideRightContainer = {
-    background: pathValue === "/register" && "transparent",
-    padding: pathValue === "/register" && "0px",
-    // padding: (pathValue === "/register" || pathValue === "/learning") && "0px",
-    width: pathValue === "/register" && "100%",
-    // height: height <= 800 && "225vh",
-    // overflowY: pathValue === "/learning" && "hidden",
-  };
+  // const sideRightContainer = {
+  //   background: pathValue === "/register" && "transparent",
+  //   padding: pathValue === "/register" && "0px",
+  //   // padding: (pathValue === "/register" || pathValue === "/learning") && "0px",
+  //   width: pathValue === "/register" && "100%",
+  //   // height: height <= 800 && "225vh",
+  //   // overflowY: pathValue === "/learning" && "hidden",
+  // };
 
   return (
     <>
       <div className="main__side__bar">
-        {pathValue !== "/register" && (
+        {pathValue !== "/register" && pathValue !== "/certificate" && (
           <div style={sideLeftContainer} className="left__side__bar">
             <div className="logo__imgh__card">
               <img
@@ -60,62 +66,118 @@ export const Sidebar = ({ children }) => {
                 <span>Brihaspathi Tech</span>
               </div>
             </div>
-            <div className="left__side__bar__icons__card">
-              <div>
-                <Link to="/" className="all__links">
-                  <MdOutlineHomeWork /> <span>Home</span>
-                </Link>
-              </div>
-            </div>
-            <div className="left__side__bar__icons__card">
-              <div>
-                <Link to="super-admin" className="all__links">
-                  <TbDeviceIpadMinus />
-                  <span>Super-Admin</span>
-                </Link>
-              </div>
-            </div>
-            <div className="left__side__bar__icons__card">
-              <div>
-                <Link to="/admin" className="all__links">
-                  <AiOutlineAccountBook />
-                  <span>Admin</span>
-                </Link>
-              </div>
-            </div>
-            <div className="left__side__bar__icons__card">
-              <div>
-                <Link to="/user" className="all__links">
-                  <FiUsers />
-                  <span>User</span>
-                </Link>
-              </div>
-            </div>
-            <div className="left__side__bar__icons__card">
-              <div>
-                <Link to="/learning" className="all__links">
-                  <TbClearAll />
-                  <span>Learning</span>
-                </Link>
-              </div>
-            </div>
-            <div className="left__side__bar__icons__card">
-              <div>
-                <Link to="/tasks" className="all__links">
-                  <BsListTask />
-                  <span>Our Tasks</span>
-                </Link>
-              </div>
-            </div>
+            {UUU && (
+              <>
+                {" "}
+                {UUU[0].role === 1 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/" className="all__links">
+                        <MdOutlineHomeWork /> <span>Home</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {UUU && (
+              <>
+                {UUU[0]?.role === 1 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="super-admin" className="all__links">
+                        <TbDeviceIpadMinus />
+                        <span>Super-Admin</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {UUU && (
+              <>
+                {UUU[0]?.role === 2 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/admin" className="all__links">
+                        <AiOutlineAccountBook />
+                        <span>Home</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0].role === 3 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/user" className="all__links">
+                        <FiUsers />
+                        <span>Home</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0].role === 3 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/learning" className="all__links">
+                        <TbClearAll />
+                        <span>Learning</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0].role === 3 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/tasks" className="all__links">
+                        <BsListTask />
+                        <span>Our Tasks</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0].role === 3 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/payment" className="all__links">
+                        <BsListTask />
+                        <span>Payment Section</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
             <div className="left__side__bar__icons__card left__side__bar__logout__card">
-              <div>
+              <div onClick={handleLogOut}>
                 <CgLogOut />
                 <span>LogOut</span>
               </div>
             </div>
           </div>
         )}
-        {pathValue !== "/register" && (
+        {pathValue !== "/register" && pathValue !== "/certificate" && (
           <>
             {!leftOpenState ? (
               <div
@@ -134,7 +196,21 @@ export const Sidebar = ({ children }) => {
             )}
           </>
         )}
-        <main style={sideRightContainer} className="right__side__bar">
+        <main
+          style={{
+            background:
+              (pathValue === "/register" || pathValue === "/certificate") &&
+              "transparent",
+            padding:
+              (pathValue === "/register" || pathValue === "/certificate") &&
+              "0px",
+            // padding: (pathValue === "/register" || pathValue === "/learning") && "0px",
+            width:
+              (pathValue === "/register" || pathValue === "/certificate") &&
+              "100%",
+          }}
+          className="right__side__bar"
+        >
           {children}
         </main>
       </div>

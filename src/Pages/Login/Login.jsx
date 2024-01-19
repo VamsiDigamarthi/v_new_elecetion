@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import "./Login.css";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { LogIns } from "../../action/AuthAction";
 const Login = () => {
   const [user, setUser] = useState({
     phonenumber: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const usernameChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -58,9 +65,8 @@ const Login = () => {
     setFormErrors(validate(user));
     setIsSubmit(true);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      console.log(user);
-    } else {
-      console.log(formErrors);
+      // console.log(user);
+      dispatch(LogIns(user, navigate));
     }
   };
 
@@ -213,8 +219,15 @@ const Login = () => {
       )}
       {switchPassToForgetPass ? (
         <div className="button__forgate__pass__card">
-          <button onClick={onLoginDetailsFun}>Submit</button>
-          <span onClick={onForgetPassFun}>Forget Password ......... !</span>
+          <button
+            onClick={onLoginDetailsFun}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            Submit
+          </button>
+          <span onClick={onForgetPassFun}>Forgot Password ......... !</span>
         </div>
       ) : (
         <div className="button__forgate__pass__card">

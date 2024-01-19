@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./SignUp.css";
 import FileBase64 from "react-file-base64";
 import { stateWiseData } from "../../data/statedata";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import { headers } from "../../data/header";
+import "react-toastify/dist/ReactToastify.css";
 const SignUp = () => {
   const [user, setUser] = useState({
     name: "",
@@ -18,6 +22,7 @@ const SignUp = () => {
     phone: "",
     voterIdImage: "",
     adharIdImage: "",
+    otp: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -32,7 +37,7 @@ const SignUp = () => {
   const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    console.log("validated fun");
+
     if (!values.name) {
       errors.name = "name is required!";
     }
@@ -54,26 +59,19 @@ const SignUp = () => {
     if (!values.dist) {
       errors.dist = "District is required!";
     }
-    if (!values.assembly) {
-      errors.assembly = "Assembly is required!";
-    }
-
     if (!values.mandal) {
       errors.mandal = "Mandal number is required!";
     }
 
-    if (!values.voteridnumber) {
-      errors.voteridnumber = "voter id number number is required!";
-    }
     if (!values.adharnumber) {
       errors.adharnumber = "adhar number number is required!";
     }
 
     if (!values.voterIdImage) {
-      errors.voterIdImage = "Voter id Image is required!";
+      errors.voterIdImage = "Adhar Card Front side is required!";
     }
     if (!values.adharIdImage) {
-      errors.adharIdImage = "Adhar Id Image is required!";
+      errors.adharIdImage = "Adhar Card Back side is required!";
     }
 
     if (!values.address) {
@@ -95,6 +93,10 @@ const SignUp = () => {
       errors.phonepe = "phonepe number must be 10 characters";
     }
 
+    if (!values.otp) {
+      errors.otp = "Please Enter Otp";
+    }
+
     return errors;
   };
 
@@ -105,20 +107,87 @@ const SignUp = () => {
     }
   }, [user.state]);
 
+  const API = axios.create({
+    baseURL: "http://localhost:5000",
+  });
+
   const onSubmitRegisterDataFn = (e) => {
     e.preventDefault();
     setFormErrors(validate(user));
     setIsSubmit(true);
+    console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      console.log(user);
-    } else {
-      console.log(formErrors);
+      API.post("/register", user, {
+        headers: headers,
+      })
+        .then((res) => {
+          console.log(res.data);
+          registorSucces();
+          setIsSubmit(false);
+          setUser({
+            name: "",
+            email: "",
+            state: "",
+            dist: "",
+            assembly: "",
+            address: "",
+            phonepe: "",
+            voteridnumber: "",
+            adharnumber: "",
+            mandal: "",
+            password: "",
+            phone: "",
+            voterIdImage: "",
+            adharIdImage: "",
+            otp: "",
+          });
+        })
+        .catch((e) => {
+          console.log(e?.response?.data?.msg);
+          errorMsgApi(e?.response?.data?.msg);
+        });
     }
   };
   //   console.log(user);
 
+  const registorSucces = () =>
+    toast.success("Registration suddesfully ..!", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+
+  const errorMsgApi = (msg) =>
+    toast.warning(msg, {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+
   return (
     <div className="signup__tabs__down__ui__card">
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="multi__input__card">
         <div className="inputBox">
           <p
@@ -136,7 +205,7 @@ const SignUp = () => {
             required="required"
             value={user.name}
           />
-          <span>Name as Per any Id</span>
+          <span>Name as Per Adhar Card</span>
         </div>
         <div className="inputBox">
           <p
@@ -169,7 +238,7 @@ const SignUp = () => {
           </p>
           <select name="state" onChange={usernameChange}>
             <option disabled hidden selected>
-              State
+              STATE
             </option>
             {stateWiseData.map((each, key) => (
               <option value={each.state} key={key}>
@@ -189,7 +258,7 @@ const SignUp = () => {
           </p>
           <select name="dist" onChange={usernameChange}>
             <option disabled hidden selected>
-              District
+              DISTRICT
             </option>
             {stateWiseDistState?.map((each, key) => (
               <option value={each.name} key={key}>
@@ -203,20 +272,20 @@ const SignUp = () => {
         <div className="inputBox">
           <p
             style={{
-              visibility: "visible",
+              visibility: "hidden",
               color: "#f58b76",
             }}
           >
-            {formErrors.assembly ? formErrors.assembly : "."}
+            {formErrors.adharnumber ? formErrors.adharnumber : "."}
           </p>
           <input
             onChange={usernameChange}
             type="text"
+            name="adharnumber"
             required="required"
-            name="assembly"
-            value={user.assembly}
+            value={user.adharnumber}
           />
-          <span>Assembly</span>
+          <span>Adhar Number</span>
         </div>
         <div className="inputBox">
           <p
@@ -237,44 +306,7 @@ const SignUp = () => {
           <span>Mandal</span>
         </div>
       </div>
-      <div className="multi__input__card">
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.voteridnumber ? formErrors.voteridnumber : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            name="voteridnumber"
-            required="required"
-            value={user.voteridnumber}
-          />
-          <span>Voter Id Number</span>
-        </div>
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "hidden",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.adharnumber ? formErrors.adharnumber : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            name="adharnumber"
-            required="required"
-            value={user.adharnumber}
-          />
-          <span>Adhar Number</span>
-        </div>
-      </div>
+
       <div className="multi__input__card">
         <div className="inputBox">
           <p
@@ -310,7 +342,7 @@ const SignUp = () => {
             name="phonepe"
             value={user.phonepe}
           />
-          <span>PhonePe Number</span>
+          <span>UPI Number</span>
         </div>
       </div>
 
@@ -341,7 +373,7 @@ const SignUp = () => {
                 });
               }}
             />
-            <span>Voter Id Image</span>
+            <span>Adhar Id Frontside</span>
           </div>
           <div className="multi__input__card ">
             {user.voterIdImage ? (
@@ -374,7 +406,7 @@ const SignUp = () => {
                 });
               }}
             />
-            <span>Adhar Id Image</span>
+            <span>Adhar Id Backside</span>
           </div>
           <div className="multi__input__card ">
             {user.adharIdImage ? (
@@ -385,26 +417,10 @@ const SignUp = () => {
           </div>
         </div>
       </div>
-      {/* images display ....! */}
-      {/* <div className="multi__input__card ">
-        {user.voterIdImage ? (
-          <img src={user.voterIdImage} alt="" />
-        ) : (
-          <img src="" alt="" />
-        )}
-        {user.adharIdImage ? (
-          <img src={user.adharIdImage} alt="" />
-        ) : (
-          <img src="" alt="" />
-        )}
-      </div> */}
 
       {/*  */}
       {/*  */}
-      {/* file uploads main card */}
 
-      {/* images display ....! */}
-      {/* text area */}
       <div className="text__are__card">
         <p
           style={{
@@ -443,9 +459,88 @@ const SignUp = () => {
         />
         <span>Password</span>
       </div>
-      <button onClick={onSubmitRegisterDataFn}>Submit</button>
+      {/* <div>
+        <span>Send OTP</span>
+      </div> */}
+      <div className="inputBox text__are__card">
+        <p
+          style={{
+            visibility: "visible",
+            color: "#f58b76",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          {formErrors.otp ? formErrors.otp : "."}
+          <p
+            style={{
+              color: "lightslategray",
+            }}
+          >
+            Send OTP
+          </p>
+        </p>
+        <input
+          onChange={usernameChange}
+          type="text"
+          required="required"
+          name="otp"
+          value={user.otp}
+        />
+        <span>OTP</span>
+      </div>
+      <button
+        style={{
+          cursor: "pointer",
+        }}
+        onClick={onSubmitRegisterDataFn}
+      >
+        Submit
+      </button>
     </div>
   );
 };
 
 export default SignUp;
+
+// {
+//   /* <div className="multi__input__card">
+//   <div className="inputBox">
+//     <p
+//       style={{
+//         visibility: "visible",
+//         color: "#f58b76",
+//       }}
+//     >
+//       {formErrors.voteridnumber ? formErrors.voteridnumber : "."}
+//     </p>
+//     <input
+//       onChange={usernameChange}
+//       type="text"
+//       name="voteridnumber"
+//       required="required"
+//       value={user.voteridnumber}
+//     />
+//     <span>Voter Id Number</span>
+//   </div>
+//   <div className="inputBox">
+//     <p
+//       style={{
+//         visibility: "hidden",
+//         color: "#f58b76",
+//       }}
+//     >
+//       {formErrors.adharnumber ? formErrors.adharnumber : "."}
+//     </p>
+//     <input
+//       onChange={usernameChange}
+//       type="text"
+//       name="adharnumber"
+//       required="required"
+//       value={user.adharnumber}
+//     />
+//     <span>Adhar Number</span>
+//   </div>
+// </div> */
+// }

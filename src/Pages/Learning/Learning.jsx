@@ -1,96 +1,115 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Learning.css";
 import ReactPlayer from "react-player/youtube";
+import Quize from "../Quize/Quize";
+import { useSelector } from "react-redux";
+import { APIS, headers } from "../../data/header";
 
 const Learning = () => {
   const [startQuize, setStartQuize] = useState(true);
+
+  const [scoreFromApi, setScoreFromApi] = useState(null);
+
+  const [scoreState, setScoreState] = useState(0);
+
+  const [scoreDisplay, setScoreDisplay] = useState(false);
+
+  const UUU = useSelector((state) => state.authReducer.authData);
 
   const onQuizeChange = () => {
     setStartQuize(false);
   };
 
+  useEffect(() => {
+    APIS.get(`/only-score/${UUU[0]?.id}`, {
+      headers: headers,
+    })
+      .then((res) => {
+        // console.log(res.data[0]?.score);
+        setScoreFromApi(res.data);
+        setScoreState(res.data[0]?.score);
+        if (res.data[0]?.score > 0) {
+          setScoreDisplay(true);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+
   return (
     <div className="learning__main__card">
-      {startQuize && (
-        <span className="all__pages__over__view">
-          Hi There Welcome Back ....!
-        </span>
-      )}
-      {startQuize ? (
-        <div className="video__card">
-          <ReactPlayer
-            width="80%"
-            height="80%"
-            url="https://youtu.be/J6-girGi-HM?feature=sharedQ"
-          />
-          <div>
-            <button onClick={onQuizeChange}>Start QUize</button>
+      {scoreDisplay ? (
+        <div className="score__main__board">
+          <div className="score__board">
+            <h1 className="quize__text__contra">
+              {scoreState >= 8 ? "Congratulation ....!" : "Final Results"}
+            </h1>
+            {scoreState >= 8 && (
+              <span
+                style={{
+                  fontSize: "20px",
+                  textAlign: "center",
+                  color: "lightslategray",
+                }}
+              >
+                Congratulations to the most decorated person in the work! I'm so
+                glad that
+                <br /> everyone can see your brilliance.
+              </span>
+            )}
+            <h4>
+              {scoreFromApi[0]?.score} out of 10 correct - (
+              {(scoreFromApi[0]?.score / 10) * 100}%)
+            </h4>
+            {scoreState >= 8 ? (
+              <div>
+                <span>Waiting For Your Task</span>
+              </div>
+            ) : (
+              <div className="restart__or__back_Video_card">
+                <button onClick={() => setScoreDisplay(false)}>
+                  Back to Video
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ) : (
-        <div className="quize__main__card">
-          <div className="quize__left__quetions">
-            <h4>QUIZ QUESTIONS AND ANSWERS</h4>
-            <div className="questions__number__card">
-              <div>
-                <span>1</span>
+        <>
+          {startQuize && (
+            <span className="all__pages__over__view">
+              Hi There Welcome Back ....!
+            </span>
+          )}
+          {startQuize ? (
+            <div className="video__card">
+              <div className="video__player__multi__card">
+                <div>
+                  <ReactPlayer
+                    width="100%"
+                    height="300px"
+                    url="https://youtu.be/J6-girGi-HM?feature=sharedQ"
+                  />
+                </div>
+                <div>
+                  <ReactPlayer
+                    width="100%"
+                    height="300px"
+                    url="https://youtu.be/J6-girGi-HM?feature=sharedQ"
+                  />
+                </div>
               </div>
-              <div>
-                <span>2</span>
-              </div>
-              <div>
-                <span>3</span>
-              </div>
-              <div>
-                <span>4</span>
-              </div>
-              <div>
-                <span>5</span>
-              </div>
-              <div>
-                <span>6</span>
-              </div>
-              <div>
-                <span>7</span>
-              </div>
-              <div>
-                <span>8</span>
-              </div>
-              <div>
-                <span>9</span>
-              </div>
-              <div>
-                <span>10</span>
+              <div className="video__to__quize__div">
+                <button onClick={onQuizeChange}>Start QUize</button>
               </div>
             </div>
-            <div className="question__card__main">
-              <h1>
-                Think Of your favorite animal, place, and color now say one of
-                them! What Did you say?
-              </h1>
+          ) : (
+            <div className="quize__main__card">
+              <Quize setStartQuize={setStartQuize} />
             </div>
-          </div>
-          <div className="quize__right__answer">
-            <div className="quize__answer__card">
-              <div className="a_quize_cardssss">
-                <span>A</span>
-                <span>It increases the application’s performance</span>
-              </div>
-              <div className="a_quize_cardssss">
-                <span>A</span>
-                <span>It increases the application’s performance</span>
-              </div>
-              <div className="a_quize_cardssss">
-                <span>A</span>
-                <span>It increases the application’s performance</span>
-              </div>
-              <div className="a_quize_cardssss">
-                <span>A</span>
-                <span>It increases the application’s performance</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );

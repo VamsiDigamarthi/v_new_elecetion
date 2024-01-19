@@ -123,12 +123,12 @@
 .contact__info {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: space-around;
+  align-items: center;
   gap: 0.7rem;
   width: 32%;
   height: 220px;
-  padding: 10px;
+  padding: 20px 10px;
   background-color: #f0f0f8;
   border-radius: 18px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -224,6 +224,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  color: lightslategray;
 }
 
 @media (max-width: 768px) {
