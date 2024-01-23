@@ -117,7 +117,7 @@ const SignUp = () => {
     setIsSubmit(true);
     console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      API.post("/register", user, {
+      API.post("/auth/register", user, {
         headers: headers,
       })
         .then((res) => {

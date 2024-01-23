@@ -12,6 +12,6 @@ headers.append("GET", "POST", "PUT", "DELETE", "OPTIONS");
 const API = axios.create({ baseURL: "http://localhost:5000" });
 
 export const logIn = (FormData) =>
-  API.post("/login", FormData, {
+  API.post("/auth/login", FormData, {
     headers: headers,
   });

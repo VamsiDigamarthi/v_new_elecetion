@@ -33,7 +33,7 @@ const User = () => {
   // console.log(userDataFromApi);
 
   const getUserDataGromApis = () => {
-    APIS.get(`/user-get-profile/${UUU[0]?.id}`, {
+    APIS.get(`/user/user-get-profile/${UUU[0]?.id}`, {
       headers: headers,
     })
       .then((res) => {

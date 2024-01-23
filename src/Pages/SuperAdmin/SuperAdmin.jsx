@@ -1,47 +1,97 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./SuperAdmin.css";
-import { BsListTask } from "react-icons/bs";
-import { TbPlayerEject } from "react-icons/tb";
-import TableUi from "../TableUi/TableUi";
+
+import { APIS, headers } from "../../data/header";
+import * as XLSX from "xlsx";
 
 const SuperAdmin = () => {
-  const [tabsView, setTabsView] = useState(1);
-
   // all user fetch where sroce is grether than equal to 8
+  const [bulkUploadDisplayMsg, setBulkUploadDisplayMsg] = useState("");
+  const [excelFile, setExcelFile] = useState(null);
+  const [excelData, setExcelData] = useState("");
+  const [typeerror, setTypeError] = useState(null);
 
+  const handleFile = (e) => {
+    let fileTypes = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/csv",
+    ];
+    let selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile && fileTypes.includes(selectedFile.type)) {
+        setTypeError(null);
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(selectedFile);
+        reader.onload = (e) => {
+          setExcelFile(e.target.result);
+        };
+      } else {
+        setTypeError("Please Select Excel File");
+        setExcelFile(null);
+      }
+    }
+  };
+
+  // use Effect
+  useEffect(() => {
+    if (excelFile !== null) {
+      const workbook = XLSX.read(excelFile, { type: "buffer" });
+      const worksheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[worksheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+      setExcelData(data);
+    }
+  }, [excelFile]);
+
+  const handleFileSubmit = (e) => {
+    e.preventDefault();
+
+    const bulkUploadedSuperAdmin = async () => {
+      await APIS.post("/state/bulk-upload", excelData, {
+        headers: headers,
+      })
+        .then((res) => {
+          // console.log(res.data);
+          setBulkUploadDisplayMsg(res.data);
+          setExcelData("");
+        })
+        .catch((e) => {
+          // console.log(e?.response?.data?.msg);
+          setBulkUploadDisplayMsg(e?.response?.data);
+        });
+    };
+    bulkUploadedSuperAdmin();
+  };
   return (
     <div className="super__admin__main__card">
       <span className="all__pages__over__view">Over View</span>
-      <div className="tabs__and__tables__main__card__with__pagination">
-        <div className="super__admin__tabs__card">
-          <div
-            onClick={() => setTabsView(1)}
-            style={{
-              color: tabsView === 1 ? "#ff5c41" : "black",
-              background: tabsView === 1 ? "#fafaff" : " #f5f5f8c7",
-            }}
-          >
-            <BsListTask size={20} />
-            <span>All Users</span>
-          </div>
-          <div
-            onClick={() => setTabsView(2)}
-            style={{
-              color: tabsView === 2 ? "#ff5c41" : "black",
-              background: tabsView === 2 ? "#fafaff" : " #f5f5f8c7",
-            }}
-          >
-            <TbPlayerEject size={22} />
-            <span>Rejected Task</span>
-          </div>
+      <div className="file__uploaded_super_main_card">
+        <div className="side_bar_upload_cams_data_card">
+          <h2>Upload a Cams Data</h2>
         </div>
-        {/* tabs close */}
-        {tabsView === 1 ? (
-          <TableUi tabsView={tabsView} />
-        ) : (
-          <TableUi tabsView={tabsView} />
+        {/*  */}
+        <form className="bulk__upload__main__card" onSubmit={handleFileSubmit}>
+          <input
+            type="file"
+            className="upload__input__tag"
+            required
+            onChange={handleFile}
+            // value={""}
+          />
+
+          <button type="submit">UPLOAD</button>
+        </form>
+        {bulkUploadDisplayMsg && (
+          <p
+            style={{
+              color: "lightslategrey",
+              fontSize: "20px",
+            }}
+          >
+            {bulkUploadDisplayMsg.msg}
+          </p>
         )}
-        {/* tables with filter card end */}
+        {typeerror && <div className="file_type_not_match">{typeerror}</div>}
       </div>
     </div>
   );

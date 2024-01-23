@@ -23,7 +23,7 @@ const EditUserDetails = ({ editUseSuccess, onOpenEditUserDetailsModal }) => {
   // console.log(editUserDetailsState);
 
   const onEditUserSubmit = () => {
-    APIS.put(`/update-profile/${UUU[0]?.id}`, editUserDetailsState, {
+    APIS.put(`/user/update-profile/${UUU[0]?.id}`, editUserDetailsState, {
       headers: headers,
     })
       .then((res) => {

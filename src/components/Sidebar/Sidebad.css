@@ -128,6 +128,8 @@
     padding: 0px 5px;
     padding-top: 20px;
     min-height: 100vh;
+    margin-bottom: 20px;
+    /* border: 2px solid red; */
     /* background-color: rgb(255, 9, 9); */
   }
   .side__bar__hamicon__card {

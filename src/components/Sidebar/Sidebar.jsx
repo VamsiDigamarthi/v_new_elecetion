@@ -12,6 +12,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { RxCross2 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 import { logout } from "../../action/AuthAction";
+import { BiSolidUserDetail } from "react-icons/bi";
 export const Sidebar = ({ children }) => {
   const UUU = useSelector((state) => state.authReducer.authData);
   const [leftOpenState, setLeftOpenState] = useState(false);
@@ -87,13 +88,14 @@ export const Sidebar = ({ children }) => {
                     <div onClick={() => setLeftOpenState(false)}>
                       <Link to="super-admin" className="all__links">
                         <TbDeviceIpadMinus />
-                        <span>Super-Admin</span>
+                        <span>Upload Cams</span>
                       </Link>
                     </div>
                   </div>
                 )}
               </>
             )}
+
             {UUU && (
               <>
                 {UUU[0]?.role === 2 && (
@@ -102,6 +104,21 @@ export const Sidebar = ({ children }) => {
                       <Link to="/admin" className="all__links">
                         <AiOutlineAccountBook />
                         <span>Home</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0]?.role === 2 && (
+                  <div className="left__side__bar__icons__card">
+                    <div onClick={() => setLeftOpenState(false)}>
+                      <Link to="/detailsps" className="all__links">
+                        <BiSolidUserDetail />
+                        <span>Details PS</span>
                       </Link>
                     </div>
                   </div>

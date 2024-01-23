@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import NotAccess from "./Pages/NotAccess/NotAccess";
 import Payment from "./Pages/Payment/Payment";
 import Certificate from "./Pages/Certificate/Certificate";
+import DetailsPs from "./Pages/DetailsPs/DetailsPs";
 function App() {
   const UUU = useSelector((state) => state.authReducer.authData);
   // console.log(UUU);
@@ -77,6 +78,21 @@ function App() {
                 )
               }
             />
+            <Route
+              path="/detailsps"
+              element={
+                UUU ? (
+                  UUU[0].role === 2 ? (
+                    <DetailsPs />
+                  ) : (
+                    <NotAccess />
+                  )
+                ) : (
+                  <Navigate to="/register" />
+                )
+              }
+            />
+            {/* admin routes */}
             <Route
               path="/user"
               element={

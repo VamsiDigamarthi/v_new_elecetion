@@ -5,12 +5,13 @@
   gap: 1rem;
 }
 
-.task__form__card > input {
+.task__form__card > select {
   width: 100%;
   height: 40px;
   border: 2px solid rgb(230, 224, 224);
   padding: 0px 4px;
   outline: none;
+  font-size: 18px;
 }
 
 .task__form__card > button {
@@ -101,4 +102,29 @@
 }
 .rejecte__heade__table > :nth-child(4) {
   width: 10%;
+}
+
+.already__assign__psnumber_card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.already__assign__psnumber {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.already__assign__psnumber > span {
+  font-size: 20px;
+  color: #ff5c41;
+}
+
+.completed__details__task {
+  width: 80%;
+  height: 40%;
+
+  background-color: #fff;
+  padding: 20px;
 }

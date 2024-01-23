@@ -8,8 +8,11 @@ import { RxCross1 } from "react-icons/rx";
 import { BiDetail } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import { MdPayment } from "react-icons/md";
-import { FaPlus } from "react-icons/fa";
+import { DiHtml5DeviceAccess } from "react-icons/di";
+import { useSelector } from "react-redux";
 const TableUi = ({ tabsView }) => {
+  const UUU = useSelector((state) => state.authReducer.authData);
+
   const [scoreUserData, setScoreUserData] = useState([]);
   const [inputField, setInputField] = useState("");
 
@@ -20,6 +23,7 @@ const TableUi = ({ tabsView }) => {
     acname: "",
     psnumber: "",
     acnumber: "",
+    district: UUU[0]?.district,
   });
 
   const onChangeTaskInput = (e) => {
@@ -53,14 +57,59 @@ const TableUi = ({ tabsView }) => {
 
   // pagination code end
 
-  // rejected task fetch data
+  // psDetaild Based on District
 
-  const onRejectedTaskFetchApi = () => {
-    APIS.get("/rejected-task-data", {
+  // ps details specific district coordinator
+  const [psAcDetailsBasedOnDistrictCoor, setPsAcDetailsBasedOnDistrictCoor] =
+    useState([]);
+
+  const [psDetailsAcNumberUnique, setPsDetailsAcNumberUnique] = useState([]);
+
+  const [psDetailsAcNameUnique, setPsDetailsAcNameUnique] = useState([]);
+
+  const [alreadyAssignPsNumber, setAlreadyAssignPsNumber] = useState([]);
+
+  // completed details task from user
+  const [openCompletDetailsTask, setOpenCompleteDetailsTask] = useState(false);
+
+  useEffect(() => {
+    if (psAcDetailsBasedOnDistrictCoor) {
+      const uniqueAcName = [
+        ...new Set(psAcDetailsBasedOnDistrictCoor?.map((item) => item.AC_Name)),
+      ];
+      const uniqueAcNumber = [
+        ...new Set(psAcDetailsBasedOnDistrictCoor?.map((item) => item.AC_No)),
+      ];
+
+      setPsDetailsAcNameUnique(uniqueAcName);
+      setPsDetailsAcNumberUnique(uniqueAcNumber);
+    }
+  }, [psAcDetailsBasedOnDistrictCoor]);
+
+  const onPsDetailsBasedOnDistrict = () => {
+    let district = UUU[0]?.district;
+    APIS.get(`/district/district-coor-ps-ac-number/${district}`, {
       headers: headers,
     })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
+        setPsAcDetailsBasedOnDistrictCoor(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  // rejected task fetch data
+
+  const onRejectedTaskFetchApi = () => {
+    let district = UUU[0]?.district;
+
+    APIS.get(`/district/rejected-task-data/${district}`, {
+      headers: headers,
+    })
+      .then((res) => {
+        // console.log(res.data);
         setScoreUserData(res.data);
         setNewScoreUserData(res.data);
       })
@@ -69,14 +118,19 @@ const TableUi = ({ tabsView }) => {
       });
   };
 
+  // district
+
   useEffect(() => {
     if (tabsView === 1) {
-      APIS.get("/score-user", {
+      let district = UUU[0]?.district;
+      // console.log(district);
+      APIS.get(`/district/score-user/${district}`, {
         headers: headers,
       })
         .then((res) => {
           setScoreUserData(res.data);
           setNewScoreUserData(res.data);
+          // console.log(res.data);
         })
         .catch((e) => {
           console.log(e);
@@ -84,6 +138,7 @@ const TableUi = ({ tabsView }) => {
     } else {
       onRejectedTaskFetchApi();
     }
+    onPsDetailsBasedOnDistrict();
   }, [tabsView]);
 
   // input field change
@@ -104,21 +159,40 @@ const TableUi = ({ tabsView }) => {
     // console.log(id);
     setAssignTaskModalOpen(true);
     setAssignTaskUserId(id);
+    APIS.get(`/user/fetch-task/${id}`, {
+      headers: headers,
+    })
+      .then((res) => {
+        console.log(res.data);
+        setAlreadyAssignPsNumber(res.data);
+        // setTaskForUser(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
+
+  // open modal user completed task details
 
   const closeTaskModal = () => {
     setAssignTaskModalOpen(false);
+    setTaskDetails({
+      psname: "",
+      acname: "",
+      psnumber: "",
+      acnumber: "",
+    });
   };
 
   // task added to user
 
   const onTaskAddToUser = (e) => {
     e.preventDefault();
-    APIS.post(`/add-task-user/${assignTaskUserId}`, taskDetails, {
+    APIS.post(`/district/add-task-user/${assignTaskUserId}`, taskDetails, {
       headers: headers,
     })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         registorSucces();
         setAssignTaskModalOpen(false);
         setTaskDetails({
@@ -131,6 +205,8 @@ const TableUi = ({ tabsView }) => {
       .catch((e) => {
         console.log(e);
       });
+
+    // additionally ps details
   };
 
   const registorSucces = () =>
@@ -205,6 +281,9 @@ const TableUi = ({ tabsView }) => {
 
   // console.log(userBasedNotRejected);
   // console.log(currentItems);
+
+  // console.log(taskDetails);
+
   return (
     <div className="table__card__with__filter">
       <ToastContainer
@@ -237,17 +316,6 @@ const TableUi = ({ tabsView }) => {
             <VscSettings size={20} color="#ff5c41" />
           </div>
         </div>
-        {tabsView === 1 && (
-          <div className="filter__selecet__and__button__card">
-            <select>
-              <option>select score</option>
-              <option>2</option>
-              <option>2</option>
-              <option>2</option>
-            </select>
-            <button>Clear</button>
-          </div>
-        )}
       </div>
       {/* tables ui */}
       {tabsView === 1 ? (
@@ -281,10 +349,13 @@ const TableUi = ({ tabsView }) => {
                   style={{
                     display: "flex",
                     gap: "1rem",
+                    cursor: "pointer",
                   }}
                 >
                   <BiDetail onClick={() => openTaskModal(each?.id)} />
-                  <MdPayment />
+                  {/* <DiHtml5DeviceAccess
+                    onClick={() => openTaskCompletedDetails(each?.id)}
+                  /> */}
                 </span>
               </div>
             ))}
@@ -362,11 +433,11 @@ const TableUi = ({ tabsView }) => {
       >
         <ReactPaginate
           breakLabel="..."
-          nextLabel="next >"
+          nextLabel="next>"
           onPageChange={handlePageClick}
           pageRangeDisplayed={5}
           pageCount={pageCount}
-          previousLabel="< previous"
+          previousLabel="<prev"
           renderOnZeroPageCount={null}
           className="paginat"
         />
@@ -378,69 +449,118 @@ const TableUi = ({ tabsView }) => {
               <span>Assign Task</span>
               <RxCross1 onClick={closeTaskModal} size={20} />
             </div>
+            <div className="already__assign__psnumber_card">
+              <span>
+                {alreadyAssignPsNumber?.length > 0
+                  ? "Assign PS Numbers"
+                  : "Not Assign Any Task"}
+              </span>
+              <div className="already__assign__psnumber">
+                {alreadyAssignPsNumber.map((each, key) => (
+                  <span key={key}>{each.PS_No}</span>
+                ))}
+              </div>
+            </div>
             <form onSubmit={onTaskAddToUser} className="task__form__card">
-              <input
-                onChange={onChangeTaskInput}
-                type="text"
-                placeholder="AC Name"
-                name="acname"
-              />
-              <input
-                onChange={onChangeTaskInput}
-                type="text"
-                placeholder="Ac Number"
-                name="acnumber"
-              />
-              <input
-                onChange={onChangeTaskInput}
-                type="text"
-                placeholder="PS Name"
-                name="psname"
-              />
-              <input
-                onChange={onChangeTaskInput}
-                type="text"
-                placeholder="Ps Number"
-                name="psnumber"
-              />
-              <button type="submit">Add Task</button>
+              <select name="psnumber" onChange={onChangeTaskInput}>
+                <option disabled hidden selected>
+                  Select PS Number
+                </option>
+                {psAcDetailsBasedOnDistrictCoor?.map((each, key) => (
+                  <option value={each.PS_No} key={key}>
+                    {each.PS_No}
+                  </option>
+                ))}
+              </select>
+              <select name="acnumber" onChange={onChangeTaskInput}>
+                <option disabled hidden selected>
+                  Select AC Number
+                </option>
+                {psDetailsAcNumberUnique?.map((each, key) => (
+                  <option value={each} key={key}>
+                    {each}
+                  </option>
+                ))}
+              </select>
+              <select name="acname" onChange={onChangeTaskInput}>
+                <option disabled hidden selected>
+                  Select AC Name
+                </option>
+                {psDetailsAcNameUnique?.map((each, key) => (
+                  <option value={each} key={key}>
+                    {each}
+                  </option>
+                ))}
+              </select>
+              <select name="psname" onChange={onChangeTaskInput}>
+                <option disabled hidden selected>
+                  Select PS Name
+                </option>
+                {psAcDetailsBasedOnDistrictCoor?.map((each, key) => (
+                  <option value={each.PS_Name_and_Address} key={key}>
+                    {each.PS_Name_and_Address}
+                  </option>
+                ))}
+              </select>
+              <button
+                style={{
+                  cursor: "pointer",
+                }}
+                type="submit"
+              >
+                Add Task
+              </button>
             </form>
           </div>
         </div>
       )}
-      {rejectedTaskModalOpen && (
+      {/* {openCompletDetailsTask && (
         <div className="user__edit__modal__main__card">
-          <div className="rejected__task__modal__card">
+          <div className="completed__details__task">
             <div className="user__modal__cross__card">
               <span>Assign Task</span>
-              <RxCross1 onClick={onCloseRejectedTask} size={20} />
-            </div>
-            <div className="user__rej__id__task">
-              <div className="rejecte__heade__table">
-                <span>Name</span>
-                <span>Mandal</span>
-                <span>AC NAme</span>
-                <span>Action</span>
-              </div>
-              {userBasedNotRejected.map((each, key) => (
-                <div key={key} className="user__ac__rejected__list">
-                  <span>{each.name.slice(0, 12)}</span>
-                  <span>{each.mandal.slice(0, 12)}</span>
-                  <span>{each.assembly.slice(0, 12)}</span>
-                  <span>
-                    <FaPlus
-                      onClick={() => onTaskAssignRejectTaskBasedOnId(each?.id)}
-                      color="#ff5c41"
-                    />
-                  </span>
-                </div>
-              ))}
+              <RxCross1 onClick={closeCompletedTaskDetailsModal} size={20} />
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
 
 export default TableUi;
+
+//
+//
+
+//       {rejectedTaskModalOpen && (
+//         <div className="user__edit__modal__main__card">
+//           <div className="rejected__task__modal__card">
+//             <div className="user__modal__cross__card">
+//               <span>Assign Task</span>
+//               <RxCross1 onClick={onCloseRejectedTask} size={20} />
+//             </div>
+//             <div className="user__rej__id__task">
+//               <div className="rejecte__heade__table">
+//                 <span>Name</span>
+//                 <span>Mandal</span>
+//                 <span>AC NAme</span>
+//                 <span>Action</span>
+//               </div>
+//               {userBasedNotRejected.map((each, key) => (
+//                 <div key={key} className="user__ac__rejected__list">
+//                   <span>{each.name.slice(0, 12)}</span>
+//                   <span>{each.mandal.slice(0, 12)}</span>
+//                   <span>{each.assembly.slice(0, 12)}</span>
+//                   <span>
+//                     <FaPlus
+//                       onClick={() => onTaskAssignRejectTaskBasedOnId(each?.id)}
+//                       color="#ff5c41"
+//                     />
+//                   </span>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       )}

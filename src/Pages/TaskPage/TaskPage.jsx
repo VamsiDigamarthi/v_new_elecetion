@@ -69,7 +69,7 @@ const TaskPage = () => {
   };
 
   const fetchAllTask = () => {
-    APIS.get(`/fetch-task/${UUU[0]?.id}`, {
+    APIS.get(`/user/fetch-task/${UUU[0]?.id}`, {
       headers: headers,
     })
       .then((res) => {
@@ -123,7 +123,7 @@ const TaskPage = () => {
 
   const onAcceptedTask = (id) => {
     APIS.put(
-      `/update-task/${id}`,
+      `/user/update-task/${id}`,
       { action: "accepted" },
       {
         headers: headers,
@@ -141,7 +141,7 @@ const TaskPage = () => {
 
   const onRejectedTask = (id) => {
     APIS.put(
-      `/update-task/${id}`,
+      `/user/update-task/${id}`,
       { action: "rejected" },
       {
         headers: headers,
@@ -185,7 +185,7 @@ const TaskPage = () => {
       setKitStartedErrorMsg("Plase Selected Image");
     } else {
       APIS.put(
-        `/kit-start-image/upload/${id}`,
+        `/user/kit-start-image/upload/${id}`,
         { image: kitStatedImageFromFile },
         {
           headers: headers,
@@ -194,6 +194,7 @@ const TaskPage = () => {
         .then((res) => {
           setKitStartedErrorMsg(null);
           uploadImageAllSucceww();
+          setKitStatedImageFromFile("");
           fetchAllTask();
         })
         .catch((e) => {
@@ -213,7 +214,7 @@ const TaskPage = () => {
       );
     } else {
       APIS.put(
-        `/installation-certificate-image/${id}`,
+        `/user/installation-certificate-image/${id}`,
         {
           instaCer: instalationCertificateState,
           instaImg: instalationImageState,
@@ -226,6 +227,8 @@ const TaskPage = () => {
           setInstallationImageError(null);
           setInstallationCertificateError(null);
           uploadImageAllSucceww();
+          setInstalationImageState("");
+          setInstalationCertificateState("");
           fetchAllTask();
         })
         .catch((e) => {
@@ -244,7 +247,7 @@ const TaskPage = () => {
       setkitFittingCertificateError("Please Selecet kit Fitting img");
     } else {
       APIS.put(
-        `/completed-certificate-kit-fitting-img/${id}`,
+        `/user/completed-certificate-kit-fitting-img/${id}`,
         {
           completedCer: completedCertificate,
           kitFit: kitFittingCertificate,
@@ -257,6 +260,8 @@ const TaskPage = () => {
           setCompletedCertificateError(null);
           setkitFittingCertificateError(null);
           uploadImageAllSucceww();
+          setCompletedCertificate("");
+          setkitFittingCertificate("");
           fetchAllTask();
         })
         .catch((e) => {

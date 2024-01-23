@@ -137,7 +137,7 @@ const Quize = ({ setStartQuize }) => {
   useEffect(() => {
     if (showResults) {
       APIS.put(
-        `/update-score/${UUU[0]?.id}`,
+        `/user/update-score/${UUU[0]?.id}`,
         { score: score },
         {
           headers: headers,
@@ -154,7 +154,7 @@ const Quize = ({ setStartQuize }) => {
         });
     } else {
       APIS.put(
-        `/update-score/${UUU[0]?.id}`,
+        `/user/update-score/${UUU[0]?.id}`,
         { score: score },
         {
           headers: headers,
@@ -180,11 +180,17 @@ const Quize = ({ setStartQuize }) => {
           {score >= 8 ? (
             <div className="quize__completed__success">
               <h1>Congratulation</h1>
-              <h4>
+              <span
+                style={{
+                  fontSize: "20px",
+                  textAlign: "center",
+                  color: "lightslategray",
+                }}
+              >
                 Congratulations to the most decorated person in the work! I'm so
                 glad that
                 <br /> everyone can see your brilliance.
-              </h4>
+              </span>
               <span>
                 {" "}
                 {score} out of {questions.length} correct - (

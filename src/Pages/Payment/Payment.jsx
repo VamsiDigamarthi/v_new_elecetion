@@ -13,7 +13,7 @@ const Payment = () => {
   );
 
   const initialPaymentData = () => {
-    APIS.get(`/payment-mode-admin-to-user/${UUU[0]?.id}`, {
+    APIS.get(`/payment/payment-mode-admin-to-user/${UUU[0]?.id}`, {
       headers: headers,
     })
       .then((res) => {
@@ -28,7 +28,7 @@ const Payment = () => {
   // fetch district coordinator
 
   const onDistrictCoordinator = () => {
-    APIS.get(`/fetch-district-coordinator/${UUU[0]?.district}`, {
+    APIS.get(`/state/fetch-district-coordinator/${UUU[0]?.district}`, {
       headers: headers,
     })
       .then((res) => {
@@ -57,7 +57,7 @@ const Payment = () => {
 
   const onPaymentModeAccepted = () => {
     APIS.put(
-      `/payment-mode-user-update/${UUU[0]?.id}`,
+      `/payment/payment-mode-user-update/${UUU[0]?.id}`,
       { paymentmode: "true", paymentText: "true" },
       {
         headers: headers,
@@ -74,7 +74,7 @@ const Payment = () => {
 
   const onPaymentModeRejected = () => {
     APIS.put(
-      `/payment-mode-user-update-two-mode/${UUU[0]?.id}`,
+      `/payment/payment-mode-user-update-two-mode/${UUU[0]?.id}`,
       { paymentuserMode: "false", paymentText: "true" },
       {
         headers: headers,
@@ -91,7 +91,7 @@ const Payment = () => {
 
   const onConfirmPayment = () => {
     APIS.put(
-      `/payment-mode-user-confirm/${UUU[0]?.id}`,
+      `/payment/payment-mode-user-confirm/${UUU[0]?.id}`,
       { paymentuserMode: "true" },
       {
         headers: headers,

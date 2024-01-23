@@ -21,7 +21,7 @@ const Learning = () => {
   };
 
   useEffect(() => {
-    APIS.get(`/only-score/${UUU[0]?.id}`, {
+    APIS.get(`/user/only-score/${UUU[0]?.id}`, {
       headers: headers,
     })
       .then((res) => {
