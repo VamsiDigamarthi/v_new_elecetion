@@ -13,6 +13,9 @@
   position: relative;
   /* background-color: #232e38;
   color: #fff; */
+  /* background-color: #ecececd3; */
+  /* background-color: #ecececd3; */
+  background-color: #3d4168;
 }
 .logo__imgh__card {
   width: 100%;
@@ -37,6 +40,7 @@
 }
 .logo__imgh__card > div > :nth-child(1) {
   font-size: 10px;
+  color: #fff;
 }
 .logo__imgh__card > div > :nth-child(2) {
   font-size: 16px;
@@ -56,21 +60,32 @@
   gap: 0.5rem;
   /* justify-content: center; */
   align-items: flex-end;
-  color: rgb(29, 28, 28);
+  /* color: rgb(29, 28, 28); */
   font-size: 17px;
   padding: 10px;
   border-radius: 12px;
+  color: #fff;
 }
 
 .all__links {
   text-decoration: none;
-  color: rgb(29, 28, 28);
+  /* color: rgb(29, 28, 28); */
   display: flex;
   gap: 0.6rem;
   align-items: center;
+  color: #fff;
+  width: 100%;
+  /* border: 2px solid red; */
 }
+
+.left__side__bar__icons__card {
+  width: 100%;
+}
+
 .left__side__bar__icons__card > div:hover {
-  background-color: #f0f1f5;
+  /* background-color: #f0f1f5; */
+  /* background-color: rgba(128, 128, 128, 0.685); */
+  background-color: rgba(160, 188, 240, 0.685);
 }
 .left__side__bar__icons__card > div > :nth-child(1) {
   font-size: 18px;
@@ -78,6 +93,7 @@
 .left__side__bar__logout__card {
   position: absolute;
   bottom: 40px;
+  width: 90%;
 }
 .left__side__bar__logout__card > div {
   /* color: orange !important; */
@@ -85,6 +101,7 @@
   font-weight: bold;
   font-size: 18px;
   color: #ff6f00;
+  cursor: pointer;
 }
 
 .side__bar__hamicon__card {
@@ -97,11 +114,12 @@
 /* right side */
 .right__side__bar {
   width: 85%;
-  background-color: #ededef;
+  /* background-color: #ededef; */
   padding: 20px;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   min-height: 100vh;
+  /* background-color: #ecececd3; */
 }
 
 /*  */

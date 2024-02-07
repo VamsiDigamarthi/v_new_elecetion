@@ -27,10 +27,15 @@ const Payment = () => {
 
   // fetch district coordinator
 
+  // console.log(UUU);
+
   const onDistrictCoordinator = () => {
-    APIS.get(`/state/fetch-district-coordinator/${UUU[0]?.district}`, {
-      headers: headers,
-    })
+    APIS.get(
+      `/state/fetch-district-coordinator/${UUU[0]?.district}/state/${UUU[0]?.state}`,
+      {
+        headers: headers,
+      }
+    )
       .then((res) => {
         // console.log(res.data);
         setDistrictCoordinatorDetails(res.data);
@@ -127,8 +132,8 @@ const Payment = () => {
                 initialPaymentMode[0]?.pay_mode_user === "false" &&
                 initialPaymentMode[0]?.payment_text_user === "false" ? (
                   <div className="payment__succecc__question__card">
-                    <h2>Are you sure</h2>
-                    <span>You Recevied Your Payment</span>
+                    <h3>Have You Recevied Your Payment</h3>
+                    {/* <span>Have You Recevied Your Payment</span> */}
                     <div className="payment__buttons">
                       <button onClick={onPaymentModeAccepted}>Yes</button>
                       <button onClick={onPaymentModeRejected}>No</button>

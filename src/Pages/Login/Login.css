@@ -5,7 +5,11 @@
   height: 90%;
   overflow: scroll;
   padding: 20px 20px;
+  position: relative;
   /* border: 2px solid red; */
+}
+.tost_new {
+  position: absolute;
 }
 
 .login__input__card {

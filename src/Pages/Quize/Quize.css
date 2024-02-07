@@ -51,6 +51,9 @@
 .quize__completed__success > h1 {
   color: #114b5f;
   font-size: 32px;
+  font-family: "Tangerine", cursive;
+  font-size: 60px;
+  font-weight: bold;
 }
 
 .quize__completed__success > h4 {

@@ -101,7 +101,7 @@ const Learning = () => {
                 </div>
               </div>
               <div className="video__to__quize__div">
-                <button onClick={onQuizeChange}>Start QUize</button>
+                <button onClick={onQuizeChange}>Start Quiz</button>
               </div>
             </div>
           ) : (

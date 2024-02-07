@@ -7,38 +7,35 @@ import { BsThreeDots } from "react-icons/bs";
 import Chart from "react-apexcharts";
 import { MdArrowCircleUp } from "react-icons/md";
 
-// import { motion } from "framer-motion";
-// import { featureVariants } from "../../data/animation";
-// import { Header } from "../Header/Header";
-
 import { useSelector } from "react-redux";
 
 const Home = () => {
   const UUU = useSelector((state) => state.authReducer.authData);
-  // chart data state start
+
+  // THIS TWO STATES ARE STORING CHART VALUES AND TEXT
   const options = {
     labels: ["Assign", "Not Assign"],
     colors: ["green", "#ff6f00"],
   };
   const [update, setUpdate] = useState([60, 40]);
 
-  // corresponding District Cordinator
+  //  APPLY BTN CLICK FETCH COORESPONDING DISTRICT COORDINATOR STORE STATE
   const [
     correspondingDistrictCoordinator,
     setCorrespondingDistrictCoordinator,
   ] = useState(null);
 
-  // main states start
-
+  // THIS BOTH STATES ARE STORING PS DETAILS
   const [initialMainPsData, setInitialMainPsData] = useState([]);
-
   const [mainCamDataFromApp, setMainCamDataFromApp] = useState([]);
+
+  // THIS ALL STATES ARE STORING COUNT AND PERCENTAGE VALUES
   const [assignPsCount, setAssignPsCount] = useState(0);
   const [notAssignPsCount, setNotAssignPsCount] = useState(0);
   const [assignPsPercentage, setAssignPsPercentage] = useState(0);
   const [notAssignPsPercentage, setNotAssignPsPercentage] = useState(0);
 
-  // initial all cams details fetch from api
+  // INITIALLY ALL STATE CAMS DETAILS FETCHING FROM DATA BASE
   const onGetAllPsDetails = () => {
     APIS.get("/state/all-ps-details-fetch-super-admin", {
       headers: headers,
@@ -52,12 +49,11 @@ const Home = () => {
         console.log(e?.response?.data?.msg);
       });
   };
-
   useEffect(() => {
     onGetAllPsDetails();
   }, []);
-  // initial all cams details fetch from api end
 
+  // AFTER DATA FETCHING CALCULATED THE COUNT AND PERCENTAGE OF PS DETAILS
   useEffect(() => {
     let notAssignPs = mainCamDataFromApp.filter((each) => each.assign === "no");
     setNotAssignPsCount(notAssignPs.length);
@@ -70,19 +66,17 @@ const Home = () => {
     setNotAssignPsPercentage(notAssignPsPerce);
   }, [mainCamDataFromApp]);
 
-  // chart updated function
-
+  // AFTER CALCULATION COMPLETED UPDATED THE CHART
   useEffect(() => {
     setUpdate([assignPsPercentage, notAssignPsPercentage]);
   }, [notAssignPsPercentage, assignPsPercentage]);
 
-  // fetch data from header component apply button click
-
+  // HEADER APPLY BTN CLICK CALL THIS FUNCTION
   const onApplyBtnClickToFetchData = (data) => {
-    console.log(data);
     let { selectedState, selectedDist } = data;
 
     if (selectedState !== null && selectedDist !== null) {
+      // FETCH THE PS DATILS AND SHOW THERE CHART
       APIS.post(
         "/state/header-apply-btn-click-psc-data",
         { selectedState, selectedDist },
@@ -95,10 +89,9 @@ const Home = () => {
         })
         .catch((e) => console.log(e));
 
-      //
-      // corresponding district coordinator
+      // FETCH THE DISTRICT COORDINATOR DETAILS FROM DATA BASE
       APIS.get(
-        `/state/fetch-district-coordinator/${selectedDist}`,
+        `/state/fetch-district-coordinator/${selectedDist}/state/${selectedState}`,
 
         {
           headers: headers,
@@ -111,8 +104,6 @@ const Home = () => {
     }
   };
 
-  console.log(mainCamDataFromApp);
-
   return (
     <div className="super__admin__main">
       <span className="all__pages__over__view new__over__view">Over View</span>
@@ -121,12 +112,7 @@ const Home = () => {
           mainCamDataFromApp={initialMainPsData}
           onApplyBtnClickToFetchData={onApplyBtnClickToFetchData}
         />
-        <div
-          // initial="offscreen"
-          // whileInView={"onscreen"}
-          // variants={featureVariants}
-          className="super__admin__main__cats__card"
-        >
+        <div className="super__admin__main__cats__card">
           <div className="chats_first_card">
             <h2>
               Hi,{" "}

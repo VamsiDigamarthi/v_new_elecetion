@@ -1,65 +1,55 @@
 import React, { useEffect, useState } from "react";
 import "./TaskPage.css";
-import FileBase64 from "react-file-base64";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { useSelector } from "react-redux";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 import { APIS, headers } from "../../data/header";
-const TaskPage = () => {
-  const [pSacImagesFromTask, setPsAcImagesFromTask] = useState({
-    installationImage: "",
-    InstallationCertificate: "",
-    CompletedCertificate: "",
-  });
 
+import {
+  acceptedTask,
+  errorMsgApi,
+  pleaseChoosImages,
+  rejectedTask,
+  resizeFile,
+  uploadImageAllSucceww,
+} from "../../util/showmessages";
+const TaskPage = () => {
   const UUU = useSelector((state) => state.authReducer.authData);
 
+  // STORE USERS TASK DATA
   const [taskForUser, setTaskForUser] = useState([]);
-  const [psAcId, setPsAcId] = useState(null);
+
+  // COLLAPS SHOW OR HIDEN TASKS STATE
   const [selectedCertificate, setSelectedCertificate] = useState(null);
 
-  // newly added features
-
+  // KIT RECEVIED IMAGES AND ERROR STORE STATES
   const [kitStatedImageFromFile, setKitStatedImageFromFile] = useState("");
-
   const [kitStartedErrorMsg, setKitStartedErrorMsg] = useState("");
 
-  // installation image
-
+  // INSTALATTION IMAGE AND ERROR STORE STATES
   const [instalationImageState, setInstalationImageState] = useState("");
-
   const [installationImageError, setInstallationImageError] = useState("");
 
-  // inst certificate
-
+  // INSTALATTION CERTIFICATE IMAGE AND ERROR STORE STATES
   const [instalationCertificateState, setInstalationCertificateState] =
     useState("");
-
   const [installationCertificateError, setInstallationCertificateError] =
     useState("");
 
-  // completed certificate and kit fitting certificate
-
+  // COMPLETED CERTIFICATE IMAGE AND ERROR STORE STATES
   const [completedCertificate, setCompletedCertificate] = useState("");
-
   const [completedCertificateError, setCompletedCertificateError] =
     useState("");
 
-  // ki fitting certificate
-
+  // KIT FITTING CERTIFICATE IMAGE AND ERROR STORE STATES
   const [kitFittingCertificate, setkitFittingCertificate] = useState("");
-
   const [kitFittingCertificateError, setkitFittingCertificateError] =
     useState("");
 
-  //
-  // newly added features
-  //
-
+  // COLLAPS THERE TASK SHOW OR HIDE IMAGES SHOW , UPLOADED FILEDS
   const toggelCertificated = (id) => {
     if (selectedCertificate === id) {
       setSelectedCertificate(null);
@@ -68,6 +58,7 @@ const TaskPage = () => {
     }
   };
 
+  // INITIALLY FETCH ALL TASKS FROM DATABASE
   const fetchAllTask = () => {
     APIS.get(`/user/fetch-task/${UUU[0]?.id}`, {
       headers: headers,
@@ -85,42 +76,7 @@ const TaskPage = () => {
     fetchAllTask();
   }, []);
 
-  // const uploadImageAllSuccess = () =>
-  //   toast.success("uploaded images successfully...!", {
-  //     position: "bottom-right",
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //     theme: "light",
-  //   });
-
-  const rejectedTask = () =>
-    toast.success("rejected task suddesfully ..!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-
-  const acceptedTask = () =>
-    toast.success("task accepted suddesfully ..!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-
+  // WHEN USER ACCEPTED BUTTON CLICK THERE CORRESPONDING TASK REJECTED FROM STORE DATABASE
   const onAcceptedTask = (id) => {
     APIS.put(
       `/user/update-task/${id}`,
@@ -130,7 +86,6 @@ const TaskPage = () => {
       }
     )
       .then((res) => {
-        // console.log(res.data);
         fetchAllTask();
         acceptedTask();
       })
@@ -139,6 +94,7 @@ const TaskPage = () => {
       });
   };
 
+  // WHEN USER REJECTED BUTTON CLICK THERE CORRESPONDING TASK REJECTED FROM STORE DATABASE
   const onRejectedTask = (id) => {
     APIS.put(
       `/user/update-task/${id}`,
@@ -148,7 +104,6 @@ const TaskPage = () => {
       }
     )
       .then((res) => {
-        // console.log(res.data);
         fetchAllTask();
         rejectedTask();
       })
@@ -156,30 +111,8 @@ const TaskPage = () => {
         console.log(e);
       });
   };
-  // const uploadImageNotSelected = () =>
-  //   toast.error("Choose all images compulsory...!", {
-  //     position: "bottom-right",
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //     theme: "light",
-  //   });
 
-  const uploadImageAllSucceww = () =>
-    toast.success("uploaded images successfully...!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-
+  // USER SUBMITTED KIT RECEVIED IMAGE FROM  DATA BASE API CALL
   const onKitStartedImageSubmit = (id) => {
     if (!kitStatedImageFromFile) {
       setKitStartedErrorMsg("Plase Selected Image");
@@ -198,14 +131,13 @@ const TaskPage = () => {
           fetchAllTask();
         })
         .catch((e) => {
-          console.log(e);
+          console.log(e?.response?.data?.msg);
+          errorMsgApi(e?.response?.data?.msg);
         });
     }
   };
 
-  // kit started
-
-  // insta certificate and img start
+  // USER SUBMITTED INSTALLATION CERTIFICATE AND IMAGE FROM  DATA BASE API CALL
   const onInstallationCertificateAndImage = (id) => {
     if (!instalationImageState || !instalationCertificateState) {
       setInstallationImageError("Plase Selecet Installation Img");
@@ -232,15 +164,12 @@ const TaskPage = () => {
           fetchAllTask();
         })
         .catch((e) => {
-          console.log(e);
+          errorMsgApi(e?.response?.data?.msg);
         });
     }
   };
 
-  // insta certificate and img end
-
-  // completed certifited
-
+  // USER SUBMITTED COMPLETED CERTIFICATE AND KIT FITTING CERTIFICATED FROM  DATA BASE API CALL
   const onCompletedCertificateKitFit = (id) => {
     if (!completedCertificate || !kitFittingCertificate) {
       setCompletedCertificateError("Plase Selecet completed Img");
@@ -266,11 +195,68 @@ const TaskPage = () => {
         })
         .catch((e) => {
           console.log(e);
+          errorMsgApi(e?.response?.data?.msg);
         });
     }
   };
 
-  // console.log(taskForUser);
+  // USER TAKES KIT RECEIVED IMAGES FUNCTION
+  const onKitReceivedImageFunc = async (event) => {
+    try {
+      const image = await resizeFile(event.target.files[0]);
+      setKitStatedImageFromFile(image);
+    } catch (err) {
+      console.log(err);
+      pleaseChoosImages();
+      setKitStatedImageFromFile("");
+    }
+  };
+
+  // USER TAKES TINSTALLATION IMAGES FUNCTION
+  const onInstallationImageFunc = async (event) => {
+    try {
+      const image = await resizeFile(event.target.files[0]);
+      setInstalationImageState(image);
+    } catch (err) {
+      console.log(err);
+      pleaseChoosImages();
+      setInstalationImageState("");
+    }
+  };
+  // USER TAKE INSTALLATION CERTIFICATE STORE IMAGES FUNCTION
+  const onInstallationCertificateFunc = async (event) => {
+    try {
+      const image = await resizeFile(event.target.files[0]);
+      setInstalationCertificateState(image);
+    } catch (err) {
+      console.log(err);
+      pleaseChoosImages();
+      setInstalationCertificateState("");
+    }
+  };
+
+  // USER TAKE COMPLETED CERTIFICATE STORE IMAGES FUNCTION
+  const onCompletedCertificateFunc = async (event) => {
+    try {
+      const image = await resizeFile(event.target.files[0]);
+      setCompletedCertificate(image);
+    } catch (err) {
+      console.log(err);
+      pleaseChoosImages();
+      setCompletedCertificate("");
+    }
+  };
+
+  // USER TAKE KIT FITTING CERTIFICATE
+  const onFittingKitImgaeFunc = async (event) => {
+    try {
+      const image = await resizeFile(event.target.files[0]);
+      setkitFittingCertificate(image);
+    } catch (err) {
+      pleaseChoosImages();
+      setkitFittingCertificate("");
+    }
+  };
 
   return (
     <div
@@ -370,7 +356,7 @@ const TaskPage = () => {
                         {/* kit start card start */}
                         <div className="kit__stared__card">
                           <span className="kit__task__number">
-                            Kit Take Image
+                            Kit Received Image
                           </span>
                           <div className="kit__stated__api__image__card">
                             <img src={each.kit_start} alt="No Data" />
@@ -385,15 +371,9 @@ const TaskPage = () => {
                             >
                               {kitStartedErrorMsg ? kitStartedErrorMsg : "."}
                             </p>
-                            <FileBase64
+                            <input
                               type="file"
-                              required="required"
-                              multiple={false}
-                              style={{ display: "none" }}
-                              className="file-card"
-                              onDone={({ base64 }) => {
-                                setKitStatedImageFromFile(base64);
-                              }}
+                              onChange={onKitReceivedImageFunc}
                             />
 
                             <span>Kit Received Image</span>
@@ -438,15 +418,10 @@ const TaskPage = () => {
                                 ? installationImageError
                                 : "."}
                             </p>
-                            <FileBase64
+
+                            <input
                               type="file"
-                              required="required"
-                              multiple={false}
-                              style={{ display: "none" }}
-                              className="file-card"
-                              onDone={({ base64 }) => {
-                                setInstalationImageState(base64);
-                              }}
+                              onChange={onInstallationImageFunc}
                             />
 
                             <span>Installation Image</span>
@@ -477,15 +452,10 @@ const TaskPage = () => {
                                 ? installationCertificateError
                                 : "."}
                             </p>
-                            <FileBase64
+
+                            <input
                               type="file"
-                              required="required"
-                              multiple={false}
-                              style={{ display: "none" }}
-                              className="file-card"
-                              onDone={({ base64 }) => {
-                                setInstalationCertificateState(base64);
-                              }}
+                              onChange={onInstallationCertificateFunc}
                             />
 
                             <span>Installation Certificate</span>
@@ -533,17 +503,11 @@ const TaskPage = () => {
                                 ? completedCertificateError
                                 : "."}
                             </p>
-                            <FileBase64
-                              type="file"
-                              required="required"
-                              multiple={false}
-                              style={{ display: "none" }}
-                              className="file-card"
-                              onDone={({ base64 }) => {
-                                setCompletedCertificate(base64);
-                              }}
-                            />
 
+                            <input
+                              type="file"
+                              onChange={onCompletedCertificateFunc}
+                            />
                             <span>Completed Certificate</span>
                             {completedCertificate && (
                               <img
@@ -555,7 +519,7 @@ const TaskPage = () => {
                           </div>
                           {/*kit fitting  */}
                           <div className="kit__stated__api__image__card">
-                            <img src={each.kit_end} alt="No ki Fitting img" />
+                            <img src={each.kit_end} alt="No kit Fitting img" />
                           </div>
 
                           <div className="file__input__box">
@@ -569,17 +533,11 @@ const TaskPage = () => {
                                 ? kitFittingCertificateError
                                 : "."}
                             </p>
-                            <FileBase64
-                              type="file"
-                              required="required"
-                              multiple={false}
-                              style={{ display: "none" }}
-                              className="file-card"
-                              onDone={({ base64 }) => {
-                                setkitFittingCertificate(base64);
-                              }}
-                            />
 
+                            <input
+                              type="file"
+                              onChange={onFittingKitImgaeFunc}
+                            />
                             <span>Kit Fitting Image</span>
                             {kitFittingCertificate && (
                               <img

@@ -6,38 +6,32 @@ import { MdOutlineOtherHouses } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
 import EditUserDetails from "../EditUserDetails/EditUserDetails";
 import { useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { APIS, headers } from "../../data/header";
+import { editUseSuccess, editUseSuccessaa } from "../../util/showmessages";
 const User = () => {
-  const [openUserModal, setOpenModalUser] = useState(false);
+  const UUU = useSelector((state) => state.authReducer.authData);
 
+  // EDIT MODAL OPEN STATE
+  const [openUserModal, setOpenModalUser] = useState(false);
+  // STORE THE USER INFORMATION FROM API (getUserDataGromApis)
   const [userDataFromApi, setUserDataFromApi] = useState([]);
 
+  // USER EDIT THERE INFORMATION OPEN MODAL FUNCTION
   const onOpenEditUserDetailsModal = () => {
     setOpenModalUser(!openUserModal);
   };
 
-  const UUU = useSelector((state) => state.authReducer.authData);
-  const editUseSuccess = () =>
-    toast.success("user edit successfully ...!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+  const editUseSuccess = () => {
+    editUseSuccessaa();
+  };
 
-  // console.log(userDataFromApi);
-
+  // FETCH THERE INFORMATION FROM DATA BASE
   const getUserDataGromApis = () => {
     APIS.get(`/user/user-get-profile/${UUU[0]?.id}`, {
       headers: headers,
     })
       .then((res) => {
-        // console.log(res.data);
         setUserDataFromApi(res.data);
       })
       .catch((e) => {
@@ -45,6 +39,7 @@ const User = () => {
       });
   };
 
+  // AFTER LOGIN SUCCESS FETCH THERE INFORMATION
   useEffect(() => {
     if (UUU) {
       getUserDataGromApis();

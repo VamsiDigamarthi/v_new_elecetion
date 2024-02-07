@@ -3,156 +3,103 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { LogIns } from "../../action/AuthAction";
+import { APIS, headers } from "../../data/header";
+import { ToastContainer } from "react-toastify";
+import { errorMsgApi, seonOtp } from "../../util/showmessages";
 const Login = () => {
+  // STORE THE USERS INFORMATION
   const [user, setUser] = useState({
-    phonenumber: "",
-    password: "",
+    phone: "",
   });
 
+  // THIS BOTH ARE USED TO NAVIGATION HOME PAGE
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
 
+  // AFTER SENDING OTP SWITCH TO LOGIN FORM TO OTP ENTER FORM
+  const [sendOtpUiDesign, setSendOtpUiDesign] = useState(false);
+
+  // WHENE USER ENTER THERE INFORMATION THAT CORRESPONDING DATA STORE FUNCTION
   const usernameChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  // BOTH STATES ARE FROM VALIDATION USING
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
 
-  const [formErrorsConfirmPass, setFormErrorsConfirmPass] = useState({});
-  const [isSubmitConfirmPass, setIsSubmitConfirmPass] = useState(false);
-
-  const [forgetPassUser, setForgetPassUser] = useState({
-    phonenumber: "",
-    password: "",
-    confirmpasswor: "",
-  });
-
-  const userChangeFonfirmPass = (e) => {
-    setForgetPassUser({ ...forgetPassUser, [e.target.name]: e.target.value });
-  };
-
-  const [switchPassToForgetPass, setSwitchPassToForgetPass] = useState(true);
-
-  const onForgetPassFun = () => {
-    setSwitchPassToForgetPass(!switchPassToForgetPass);
-  };
-
+  // FORM VALIDATIONS FROM USERS DATA
   const validate = (values) => {
     const errors = {};
 
-    if (!values.phonenumber) {
-      errors.phonenumber = "phonenumber is required!";
-    } else if (isNaN(values.phonenumber)) {
-      errors.phonenumber = "Please Enter Only Numbers..!";
-    } else if (values.phonenumber.length !== 10) {
-      errors.phonenumber = "Phone number must be 10 digits";
+    if (!values.phone) {
+      errors.phone = "phonenumber is required!";
+    } else if (isNaN(values.phone)) {
+      errors.phone = "Please Enter Only Numbers..!";
+    } else if (values.phone.length !== 10) {
+      errors.phone = "Phone number must be 10 digits";
     }
-    if (!values.password) {
-      errors.password = "Password is required";
-    } else if (values.password.length < 4) {
-      errors.password = "Password must be more than 4 characters";
-    } else if (values.password.length > 10) {
-      errors.password = "Password cannot exceed more than 10 characters";
-    }
-
     return errors;
   };
-
+  // AFTER VALIDATION COMPLETED SEND THE OTP FUNCTION
   const onLoginDetailsFun = (e) => {
     e.preventDefault();
     setFormErrors(validate(user));
     setIsSubmit(true);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      // console.log(user);
+      console.log("submited Button");
       dispatch(LogIns(user, navigate));
+      // APIS.post("/auth/new-login", user, { headers: headers })
+      //   .then(() => {
+      //     setIsSubmit(false);
+      //     setSendOtpUiDesign(true);
+      //     seonOtp();
+      //   })
+      //   .catch((e) => {
+      //     console.log(e?.response?.data?.msg);
+      //     errorMsgApi(e?.response?.data?.msg);
+      //   });
     }
   };
-
-  const validateConfirmPass = (values) => {
-    const errors = {};
-    if (!values.phonenumber) {
-      errors.phonenumber = "phonenumber is required!";
-    } else if (isNaN(values.phonenumber)) {
-      errors.phonenumber = "Please Enter Only Numbers..!";
-    } else if (values.phonenumber.length !== 10) {
-      errors.phonenumber = "Phone number must be 10 digits";
-    }
-    // password
-    if (!values.password) {
-      errors.password = "Password is required";
-    } else if (values.password.length < 4) {
-      errors.password = "Pass must be more than 4 char";
-    } else if (values.password.length > 10) {
-      errors.password = "Pass can't exceed more than 10 char";
-    }
-
-    // confirm password validation
-
-    if (!values.confirmpasswor) {
-      errors.confirmpasswor = "Confirm Pass is required";
-    } else if (values.password !== values.confirmpasswor) {
-      errors.confirmpasswor = "Pass Confirm Pass must be Same";
-    }
-    return errors;
+  // USER ENTER THERE OTP IN INPUT FIELD
+  const onChangeOtpFromInput = (e) => {
+    setUser({ ...user, otp: e.target.value });
   };
 
-  const onLoginConfirmPassFun = (e) => {
-    e.preventDefault();
-    setFormErrorsConfirmPass(validateConfirmPass(forgetPassUser));
-    setIsSubmitConfirmPass(true);
-    if (
-      Object.keys(formErrorsConfirmPass).length === 0 &&
-      isSubmitConfirmPass
-    ) {
-      console.log(forgetPassUser);
-    }
+  // AFTER OTP SEND SUBMITTED LOGIN FORM
+  const onSubmitOtpFunc = () => {
+    dispatch(LogIns(user, navigate));
   };
 
   return (
     <div className="login__page__main">
-      {switchPassToForgetPass ? (
-        <>
-          <div className="inputBox login__input__card">
-            <p
-              style={{
-                visibility: "visible",
-                color: "#f58b76",
-              }}
-            >
-              {formErrors.phonenumber ? formErrors.phonenumber : "."}
-            </p>
-            <input
-              // onChange={usernameChange}
-              type="text"
-              required="required"
-              name="phonenumber"
-              onChange={usernameChange}
-              value={user.phonenumber}
-            />
-            <span>Phone Number</span>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="tost_new"
+      />
+      {sendOtpUiDesign ? (
+        <div className="send__otp__main__card">
+          <h3>Enter Your OTP</h3>
+
+          <input
+            type="text"
+            maxLength="4"
+            placeholder="Please Enter 4 Digit Otp"
+            onChange={onChangeOtpFromInput}
+          />
+          <div onClick={onSubmitOtpFunc} className="otp_submit_btn">
+            <button>Submit Otp</button>
           </div>
-          <div className="inputBox login__input__card">
-            <p
-              style={{
-                visibility: "visible",
-                color: "#f58b76",
-              }}
-            >
-              {formErrors.password ? formErrors.password : "."}
-            </p>
-            <input
-              // onChange={usernameChange}
-              type="text"
-              required="required"
-              name="password"
-              onChange={usernameChange}
-              value={user.password}
-            />
-            <span>Password</span>
-          </div>
-        </>
+        </div>
       ) : (
         <>
           <div className="inputBox login__input__card">
@@ -162,80 +109,30 @@ const Login = () => {
                 color: "#f58b76",
               }}
             >
-              {formErrorsConfirmPass.phonenumber
-                ? formErrorsConfirmPass.phonenumber
-                : "."}
+              {formErrors.phone ? formErrors.phone : "."}
             </p>
             <input
+              // onChange={usernameChange}
               type="text"
               required="required"
-              name="phonenumber"
-              onChange={userChangeFonfirmPass}
-              value={forgetPassUser.phonenumber}
+              name="phone"
+              onChange={usernameChange}
+              value={user.phone}
             />
             <span>Phone Number</span>
           </div>
-          <div className="inputBox login__input__card">
-            <p
+
+          <div className="button__forgate__pass__card">
+            <button
+              onClick={onLoginDetailsFun}
               style={{
-                visibility: "visible",
-                color: "#f58b76",
+                cursor: "pointer",
               }}
             >
-              {formErrorsConfirmPass.password
-                ? formErrorsConfirmPass.password
-                : "."}
-            </p>
-            <input
-              onChange={userChangeFonfirmPass}
-              type="text"
-              required="required"
-              name="password"
-              value={forgetPassUser.password}
-            />
-            <span>New Password</span>
-          </div>
-          <div className="inputBox login__input__card new__input__box__for__mobile">
-            <p
-              style={{
-                visibility: "visible",
-                color: "#f58b76",
-              }}
-            >
-              {formErrorsConfirmPass.confirmpasswor
-                ? formErrorsConfirmPass.confirmpasswor
-                : "."}
-            </p>
-            <input
-              onChange={userChangeFonfirmPass}
-              type="text"
-              required="required"
-              name="confirmpasswor"
-              value={forgetPassUser.confirmpasswor}
-            />
-            <span>Confirm New Password</span>
+              Submit
+            </button>
           </div>
         </>
-      )}
-      {switchPassToForgetPass ? (
-        <div className="button__forgate__pass__card">
-          <button
-            onClick={onLoginDetailsFun}
-            style={{
-              cursor: "pointer",
-            }}
-          >
-            Submit
-          </button>
-          <span onClick={onForgetPassFun}>Forgot Password ......... !</span>
-        </div>
-      ) : (
-        <div className="button__forgate__pass__card">
-          <button onClick={onLoginConfirmPassFun}>Update</button>
-          <span onClick={onForgetPassFun}>
-            Switch to Login Page ......... !
-          </span>
-        </div>
       )}
     </div>
   );

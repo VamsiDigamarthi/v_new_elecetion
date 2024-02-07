@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Sidebad.css";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { TbDeviceIpadMinus } from "react-icons/tb";
-import { AiOutlineAccountBook } from "react-icons/ai";
+import { AiOutlineAccountBook, AiOutlineMessage } from "react-icons/ai";
 import { TbClearAll } from "react-icons/tb";
 import { FiUsers } from "react-icons/fi";
 import { BsListTask } from "react-icons/bs";
@@ -13,7 +13,11 @@ import { RxCross2 } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 import { logout } from "../../action/AuthAction";
 import { BiSolidUserDetail } from "react-icons/bi";
-export const Sidebar = ({ children }) => {
+import { GoTasklist } from "react-icons/go";
+import { FaArrowDownUpAcrossLine } from "react-icons/fa6";
+import { SiAmazonpay } from "react-icons/si";
+
+export const Sidebar = ({ children, taskAssignAdminModalOpen }) => {
   const UUU = useSelector((state) => state.authReducer.authData);
   const [leftOpenState, setLeftOpenState] = useState(false);
   const location = useLocation();
@@ -39,19 +43,10 @@ export const Sidebar = ({ children }) => {
     zIndex: leftOpenState && "3000000",
     width: leftOpenState && "56%",
     height: leftOpenState && "100vh",
-    background: leftOpenState && "#fffffc",
+    background: leftOpenState && "#3d4168",
+    // background: leftOpenState && "#fffffc",
+    filter: taskAssignAdminModalOpen && "blur(10px)",
   };
-  // side right container
-
-  // const sideRightContainer = {
-  //   background: pathValue === "/register" && "transparent",
-  //   padding: pathValue === "/register" && "0px",
-  //   // padding: (pathValue === "/register" || pathValue === "/learning") && "0px",
-  //   width: pathValue === "/register" && "100%",
-  //   // height: height <= 800 && "225vh",
-  //   // overflowY: pathValue === "/learning" && "hidden",
-  // };
-
   return (
     <>
       <div className="main__side__bar">
@@ -71,27 +66,42 @@ export const Sidebar = ({ children }) => {
               <>
                 {" "}
                 {UUU[0].role === 1 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/" className="all__links">
+                  <Link to="/" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <MdOutlineHomeWork /> <span>Home</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </>
             )}
             {UUU && (
               <>
                 {UUU[0]?.role === 1 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="super-admin" className="all__links">
+                  <Link to="super-admin" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <TbDeviceIpadMinus />
                         <span>Upload Cams</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0]?.role === 1 && (
+                  <Link to="state/assign/task" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
+                        <TbDeviceIpadMinus />
+                        <span>Assign Tasks</span>
+                      </div>
+                    </div>
+                  </Link>
                 )}
               </>
             )}
@@ -99,14 +109,14 @@ export const Sidebar = ({ children }) => {
             {UUU && (
               <>
                 {UUU[0]?.role === 2 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/admin" className="all__links">
+                  <Link to="/admin" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <AiOutlineAccountBook />
                         <span>Home</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </>
             )}
@@ -114,14 +124,79 @@ export const Sidebar = ({ children }) => {
             {UUU && (
               <>
                 {UUU[0]?.role === 2 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/detailsps" className="all__links">
+                  <Link to="/detailsps" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <BiSolidUserDetail />
                         <span>Details PS</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
+                )}
+              </>
+            )}
+
+            {/* assign task s */}
+
+            {UUU && (
+              <>
+                {UUU[0]?.role === 2 && (
+                  <Link to="/assigntask" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
+                        <GoTasklist />
+                        <span>Assign Task</span>
+                      </div>
+                    </div>
+                  </Link>
+                )}
+              </>
+            )}
+
+            {/* rejected task */}
+
+            {UUU && (
+              <>
+                {UUU[0]?.role === 2 && (
+                  <Link to="/rejected" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
+                        <FaArrowDownUpAcrossLine />
+                        <span>Rejected Task</span>
+                      </div>
+                    </div>
+                  </Link>
+                )}
+              </>
+            )}
+
+            {/* payment show district coor */}
+            {UUU && (
+              <>
+                {UUU[0]?.role === 2 && (
+                  <Link to="/payment-district-coor" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
+                        <SiAmazonpay />
+                        <span>Payment Details</span>
+                      </div>
+                    </div>
+                  </Link>
+                )}
+              </>
+            )}
+
+            {UUU && (
+              <>
+                {UUU[0]?.role === 2 && (
+                  <Link to="/chat" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
+                        <AiOutlineMessage />
+                        <span>Chat</span>
+                      </div>
+                    </div>
+                  </Link>
                 )}
               </>
             )}
@@ -129,14 +204,14 @@ export const Sidebar = ({ children }) => {
             {UUU && (
               <>
                 {UUU[0].role === 3 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/user" className="all__links">
+                  <Link to="/user" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <FiUsers />
                         <span>Home</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </>
             )}
@@ -144,14 +219,14 @@ export const Sidebar = ({ children }) => {
             {UUU && (
               <>
                 {UUU[0].role === 3 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/learning" className="all__links">
+                  <Link to="/learning" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <TbClearAll />
                         <span>Learning</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </>
             )}
@@ -159,14 +234,14 @@ export const Sidebar = ({ children }) => {
             {UUU && (
               <>
                 {UUU[0].role === 3 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/tasks" className="all__links">
+                  <Link to="/tasks" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <BsListTask />
                         <span>Our Tasks</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </>
             )}
@@ -174,14 +249,14 @@ export const Sidebar = ({ children }) => {
             {UUU && (
               <>
                 {UUU[0].role === 3 && (
-                  <div className="left__side__bar__icons__card">
-                    <div onClick={() => setLeftOpenState(false)}>
-                      <Link to="/payment" className="all__links">
+                  <Link to="/payment" className="all__links">
+                    <div className="left__side__bar__icons__card">
+                      <div onClick={() => setLeftOpenState(false)}>
                         <BsListTask />
                         <span>Payment Section</span>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </>
             )}

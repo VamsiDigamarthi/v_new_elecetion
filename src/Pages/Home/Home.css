@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  color: #fff;
+  /* color: #fff; */
   width: 100%;
   /* border: 2px solid red; */
   height: 100%;
@@ -66,7 +66,8 @@
   width: 28%;
   border-radius: 7px;
   padding: 20px;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  box-shadow: rgba(175, 174, 174, 0.2) 0px 2px 8px 0px;
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
 }
 
 .super_admin_car_number_card > :nth-child(2) {
@@ -148,8 +149,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.8rem;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   /* background-color: #333333; */
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
 }
 .district__cor__name__card {
   width: 100%;

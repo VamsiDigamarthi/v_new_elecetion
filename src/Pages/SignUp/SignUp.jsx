@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
 import "./SignUp.css";
-import FileBase64 from "react-file-base64";
 import { stateWiseData } from "../../data/statedata";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
-import { headers } from "../../data/header";
+import { ToastContainer } from "react-toastify";
+import { APIS, headers } from "../../data/header";
 import "react-toastify/dist/ReactToastify.css";
+
+import {
+  errorMsgApi,
+  pleaseChoosImages,
+  registorSucces,
+  resizeFile,
+  seonOtp,
+} from "../../util/showmessages";
 const SignUp = () => {
+  // user store data state
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -22,18 +29,24 @@ const SignUp = () => {
     phone: "",
     voterIdImage: "",
     adharIdImage: "",
-    otp: "",
   });
 
+  // switch to login form to otp form by using this state
+  const [sendOtpUiDesign, setSendOtpUiDesign] = useState(false);
+
+  // this two states are form validations
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
 
+  // state change corresponding district names store state
   const [stateWiseDistState, setStateWiseDistState] = useState([]);
 
+  // user changes input field that corresponding data store there state function
   const usernameChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  // validated all users information before there submitted data
   const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -93,13 +106,10 @@ const SignUp = () => {
       errors.phonepe = "phonepe number must be 10 characters";
     }
 
-    if (!values.otp) {
-      errors.otp = "Please Enter Otp";
-    }
-
     return errors;
   };
 
+  // whene user selected state that corresponding district filters
   useEffect(() => {
     if (user.state !== "") {
       const newDist = stateWiseData.filter((each) => each.state === user.state);
@@ -107,40 +117,18 @@ const SignUp = () => {
     }
   }, [user.state]);
 
-  const API = axios.create({
-    baseURL: "http://localhost:5000",
-  });
-
+  // user validated there form and send otp api call
   const onSubmitRegisterDataFn = (e) => {
     e.preventDefault();
     setFormErrors(validate(user));
     setIsSubmit(true);
-    console.log(formErrors);
+
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      API.post("/auth/register", user, {
-        headers: headers,
-      })
-        .then((res) => {
-          console.log(res.data);
-          registorSucces();
+      APIS.post("/auth/new-sign", { phone: user.phone }, { headers: headers })
+        .then(() => {
           setIsSubmit(false);
-          setUser({
-            name: "",
-            email: "",
-            state: "",
-            dist: "",
-            assembly: "",
-            address: "",
-            phonepe: "",
-            voteridnumber: "",
-            adharnumber: "",
-            mandal: "",
-            password: "",
-            phone: "",
-            voterIdImage: "",
-            adharIdImage: "",
-            otp: "",
-          });
+          setSendOtpUiDesign(true);
+          seonOtp();
         })
         .catch((e) => {
           console.log(e?.response?.data?.msg);
@@ -148,399 +136,381 @@ const SignUp = () => {
         });
     }
   };
-  //   console.log(user);
 
-  const registorSucces = () =>
-    toast.success("Registration suddesfully ..!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+  // submitted otp from signup user if otp is valid
+  const onSubmitOtpFunc = () => {
+    APIS.post("/auth/verify-otp", user, { headers: headers })
+      .then(() => {
+        registorSucces();
+        setSendOtpUiDesign(false);
+        setUser({
+          name: "",
+          email: "",
+          state: "",
+          dist: "",
+          assembly: "",
+          address: "",
+          phonepe: "",
+          voteridnumber: "",
+          adharnumber: "",
+          mandal: "",
+          password: "",
+          phone: "",
+          voterIdImage: "",
+          adharIdImage: "",
+        });
+      })
+      .catch((e) => {
+        console.log(e?.response?.data?.msg);
+        errorMsgApi(e?.response?.data?.msg);
+      });
+  };
 
-  const errorMsgApi = (msg) =>
-    toast.warning(msg, {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+  // user enter otp in input field
+  const onChangeOtpFromInput = (e) => {
+    setUser({ ...user, otp: e.target.value });
+  };
+
+  // this function takes adhar card front image
+  const onFrontAdhrChange = async (event) => {
+    try {
+      const file = event.target.files[0];
+      const image = await resizeFile(file);
+      setUser({
+        ...user,
+        voterIdImage: image,
+      });
+    } catch (err) {
+      console.log(err);
+      pleaseChoosImages();
+      setUser({
+        ...user,
+        voterIdImage: "",
+      });
+    }
+  };
+
+  // this function take the adhar card back side image
+  const onBackAdhrChange = async (event) => {
+    try {
+      const file = event.target.files[0];
+      const image = await resizeFile(file);
+      setUser({
+        ...user,
+        adharIdImage: image,
+      });
+    } catch (err) {
+      console.log(err);
+      pleaseChoosImages();
+      setUser({
+        ...user,
+        adharIdImage: "",
+      });
+    }
+  };
 
   return (
-    <div className="signup__tabs__down__ui__card">
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <div className="multi__input__card">
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.name ? formErrors.name : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            name="name"
-            required="required"
-            value={user.name}
+    <>
+      {sendOtpUiDesign ? (
+        <div className="send__otp__main__card">
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
           />
-          <span>Name as Per Adhar Card</span>
-        </div>
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.email ? formErrors.email : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            name="email"
-            required="required"
-            value={user.email}
-          />
-          <span>Email</span>
-        </div>
-      </div>
-      <div className="multi__input__card">
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.state ? formErrors.state : "."}
-          </p>
-          <select name="state" onChange={usernameChange}>
-            <option disabled hidden selected>
-              STATE
-            </option>
-            {stateWiseData.map((each, key) => (
-              <option value={each.state} key={key}>
-                {each.state}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.dist ? formErrors.dist : "."}
-          </p>
-          <select name="dist" onChange={usernameChange}>
-            <option disabled hidden selected>
-              DISTRICT
-            </option>
-            {stateWiseDistState?.map((each, key) => (
-              <option value={each.name} key={key}>
-                {each.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="multi__input__card">
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "hidden",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.adharnumber ? formErrors.adharnumber : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            name="adharnumber"
-            required="required"
-            value={user.adharnumber}
-          />
-          <span>Adhar Number</span>
-        </div>
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.mandal ? formErrors.mandal : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            required="required"
-            name="mandal"
-            value={user.mandal}
-          />
-          <span>Mandal</span>
-        </div>
-      </div>
+          <h3>Enter Your OTP</h3>
 
-      <div className="multi__input__card">
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.phone ? formErrors.phone : "."}
-          </p>
           <input
-            onChange={usernameChange}
             type="text"
-            name="phone"
-            required="required"
-            value={user.phone}
+            maxLength="4"
+            placeholder="Please Enter 4 Digit Otp"
+            onChange={onChangeOtpFromInput}
           />
-          <span>Phone Number</span>
+          <div onClick={onSubmitOtpFunc} className="otp_submit_btn">
+            <button>Submit Otp</button>
+          </div>
         </div>
-        <div className="inputBox">
-          <p
-            style={{
-              visibility: "visible",
-              color: "#f58b76",
-            }}
-          >
-            {formErrors.phonepe ? formErrors.phonepe : "."}
-          </p>
-          <input
-            onChange={usernameChange}
-            type="text"
-            required="required"
-            name="phonepe"
-            value={user.phonepe}
+      ) : (
+        <div className="signup__tabs__down__ui__card">
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
           />
-          <span>UPI Number</span>
-        </div>
-      </div>
+          {/* user name and email set input field */}
+          <div className="multi__input__card">
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.name ? formErrors.name : "."}
+              </p>
+              <input
+                onChange={usernameChange}
+                type="text"
+                name="name"
+                required="required"
+                value={user.name}
+              />
+              <span>Name as Per Adhar Card</span>
+            </div>
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.email ? formErrors.email : "."}
+              </p>
+              <input
+                onChange={usernameChange}
+                type="text"
+                name="email"
+                required="required"
+                value={user.email}
+              />
+              <span>Email</span>
+            </div>
+          </div>
+          {/* state and district set selected field */}
+          <div className="multi__input__card">
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.state ? formErrors.state : "."}
+              </p>
+              <select name="state" onChange={usernameChange}>
+                <option disabled hidden selected>
+                  STATE
+                </option>
+                {stateWiseData.map((each, key) => (
+                  <option value={each.state} key={key}>
+                    {each.state}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.dist ? formErrors.dist : "."}
+              </p>
+              <select name="dist" onChange={usernameChange}>
+                <option disabled hidden selected>
+                  DISTRICT
+                </option>
+                {stateWiseDistState?.map((each, key) => (
+                  <option value={each.name} key={key}>
+                    {each.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          {/* Adhar number and mandal set input field */}
+          <div className="multi__input__card">
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "hidden",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.adharnumber ? formErrors.adharnumber : "."}
+              </p>
+              <input
+                onChange={usernameChange}
+                type="text"
+                name="adharnumber"
+                required="required"
+                value={user.adharnumber}
+              />
+              <span>Adhar Number</span>
+            </div>
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.mandal ? formErrors.mandal : "."}
+              </p>
+              <input
+                onChange={usernameChange}
+                type="text"
+                required="required"
+                name="mandal"
+                value={user.mandal}
+              />
+              <span>Mandal</span>
+            </div>
+          </div>
+          {/* phone number and UPI number set Input Field */}
+          <div className="multi__input__card">
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.phone ? formErrors.phone : "."}
+              </p>
+              <input
+                onChange={usernameChange}
+                type="text"
+                name="phone"
+                required="required"
+                value={user.phone}
+              />
+              <span>Phone Number</span>
+            </div>
+            <div className="inputBox">
+              <p
+                style={{
+                  visibility: "visible",
+                  color: "#f58b76",
+                }}
+              >
+                {formErrors.phonepe ? formErrors.phonepe : "."}
+              </p>
+              <input
+                onChange={usernameChange}
+                type="text"
+                required="required"
+                name="phonepe"
+                value={user.phonepe}
+              />
+              <span>UPI Number</span>
+            </div>
+          </div>
+          {/* ADHAR CARD FRONT AND BACK SIDE IMAGES UPLOADED  */}
+          <div className="multi__input__card__file">
+            <div className="file__image__preview__card">
+              <div className="file__input__box">
+                <p
+                  style={{
+                    visibility: "visible",
+                    color: "#f58b76",
+                  }}
+                >
+                  {formErrors.voterIdImage ? formErrors.voterIdImage : "."}
+                </p>
+                <input type="file" onChange={onFrontAdhrChange} />
 
-      {/*  */}
-      {/*  */}
-      {/* file uploads main card */}
-      <div className="multi__input__card__file">
-        <div className="file__image__preview__card">
-          <div className="file__input__box">
+                <span>Adhar Id Frontside</span>
+              </div>
+              <div className="multi__input__card ">
+                {user.voterIdImage ? (
+                  <img src={user.voterIdImage} alt="" />
+                ) : (
+                  <img src="" alt="" />
+                )}
+              </div>
+            </div>
+            <div className="file__image__preview__card">
+              <div className="file__input__box">
+                <p
+                  style={{
+                    visibility: "visible",
+                    color: "#f58b76",
+                  }}
+                >
+                  {formErrors.adharIdImage ? formErrors.adharIdImage : "."}
+                </p>
+
+                <input type="file" onChange={onBackAdhrChange} />
+                <span>Adhar Id Backside</span>
+              </div>
+              <div className="multi__input__card ">
+                {user.adharIdImage ? (
+                  <img src={user.adharIdImage} alt="" />
+                ) : (
+                  <img src="" alt="" />
+                )}
+              </div>
+            </div>
+          </div>
+          {/* SET THE ADDRESS  */}
+          <div className="text__are__card">
             <p
               style={{
                 visibility: "visible",
                 color: "#f58b76",
               }}
             >
-              {formErrors.voterIdImage ? formErrors.voterIdImage : "."}
+              {formErrors.address ? formErrors.address : "."}
             </p>
-            <FileBase64
-              type="file"
+
+            <textarea
+              cols="50"
+              placeholder="Enter Your Address"
+              rows="5"
               required="required"
-              multiple={false}
-              style={{ display: "none" }}
-              className="file-card"
-              onDone={({ base64 }) => {
-                setUser({
-                  ...user,
-                  voterIdImage: base64,
-                });
-              }}
-            />
-            <span>Adhar Id Frontside</span>
+              onChange={usernameChange}
+              name="address"
+              value={user.address}
+            ></textarea>
           </div>
-          <div className="multi__input__card ">
-            {user.voterIdImage ? (
-              <img src={user.voterIdImage} alt="" />
-            ) : (
-              <img src="" alt="" />
-            )}
-          </div>
-        </div>
-        <div className="file__image__preview__card">
-          <div className="file__input__box">
+          {/* USER PASSWORD FIELD */}
+          <div className="inputBox text__are__card">
             <p
               style={{
                 visibility: "visible",
                 color: "#f58b76",
               }}
             >
-              {formErrors.adharIdImage ? formErrors.adharIdImage : "."}
+              {formErrors.password ? formErrors.password : "."}
             </p>
-            <FileBase64
-              type="file"
+            <input
+              onChange={usernameChange}
+              type="text"
               required="required"
-              multiple={false}
-              style={{ display: "none" }}
-              className="file-card"
-              onDone={({ base64 }) => {
-                setUser({
-                  ...user,
-                  adharIdImage: base64,
-                });
-              }}
+              name="password"
+              value={user.password}
             />
-            <span>Adhar Id Backside</span>
+            <span>Password</span>
           </div>
-          <div className="multi__input__card ">
-            {user.adharIdImage ? (
-              <img src={user.adharIdImage} alt="" />
-            ) : (
-              <img src="" alt="" />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/*  */}
-      {/*  */}
-
-      <div className="text__are__card">
-        <p
-          style={{
-            visibility: "visible",
-            color: "#f58b76",
-          }}
-        >
-          {formErrors.address ? formErrors.address : "."}
-        </p>
-
-        <textarea
-          cols="50"
-          placeholder="Enter Your Address"
-          rows="5"
-          required="required"
-          onChange={usernameChange}
-          name="address"
-          value={user.address}
-        ></textarea>
-      </div>
-      <div className="inputBox text__are__card">
-        <p
-          style={{
-            visibility: "visible",
-            color: "#f58b76",
-          }}
-        >
-          {formErrors.password ? formErrors.password : "."}
-        </p>
-        <input
-          onChange={usernameChange}
-          type="text"
-          required="required"
-          name="password"
-          value={user.password}
-        />
-        <span>Password</span>
-      </div>
-      {/* <div>
-        <span>Send OTP</span>
-      </div> */}
-      <div className="inputBox text__are__card">
-        <p
-          style={{
-            visibility: "visible",
-            color: "#f58b76",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {formErrors.otp ? formErrors.otp : "."}
-          <p
+          {/* SUBMITED THERE FORM */}
+          <button
             style={{
-              color: "lightslategray",
+              cursor: "pointer",
             }}
+            onClick={onSubmitRegisterDataFn}
           >
-            Send OTP
-          </p>
-        </p>
-        <input
-          onChange={usernameChange}
-          type="text"
-          required="required"
-          name="otp"
-          value={user.otp}
-        />
-        <span>OTP</span>
-      </div>
-      <button
-        style={{
-          cursor: "pointer",
-        }}
-        onClick={onSubmitRegisterDataFn}
-      >
-        Submit
-      </button>
-    </div>
+            Submit
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 
 export default SignUp;
-
-// {
-//   /* <div className="multi__input__card">
-//   <div className="inputBox">
-//     <p
-//       style={{
-//         visibility: "visible",
-//         color: "#f58b76",
-//       }}
-//     >
-//       {formErrors.voteridnumber ? formErrors.voteridnumber : "."}
-//     </p>
-//     <input
-//       onChange={usernameChange}
-//       type="text"
-//       name="voteridnumber"
-//       required="required"
-//       value={user.voteridnumber}
-//     />
-//     <span>Voter Id Number</span>
-//   </div>
-//   <div className="inputBox">
-//     <p
-//       style={{
-//         visibility: "hidden",
-//         color: "#f58b76",
-//       }}
-//     >
-//       {formErrors.adharnumber ? formErrors.adharnumber : "."}
-//     </p>
-//     <input
-//       onChange={usernameChange}
-//       type="text"
-//       name="adharnumber"
-//       required="required"
-//       value={user.adharnumber}
-//     />
-//     <span>Adhar Number</span>
-//   </div>
-// </div> */
-// }

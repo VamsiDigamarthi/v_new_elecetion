@@ -2,14 +2,19 @@ import React, { useEffect, useState } from "react";
 import "./Header.css";
 
 const Header = ({ mainCamDataFromApp, onApplyBtnClickToFetchData }) => {
+  // ALL STATE NAMES ARE STORES
   const [state, setState] = useState([]);
-
+  // ALL DISTRICT NAMES STORES
   const [disticts, setDisticts] = useState(null);
 
+  // STORE ONE THE STATE VALUE
   const [selectedState, setSelectedState] = useState("");
 
+  // STORE ONE DISTRICT VALUE
   const [selectedDist, setSelectedDist] = useState(null);
 
+  // SELECTED STATE THAT CORRESPONDING DISTRICT COORDINATOR VALUE FILTER FUNCTION
+  // AND STORE THE STATE VALUES
   const selectSate = (e) => {
     setDisticts([]);
 
@@ -28,6 +33,7 @@ const Header = ({ mainCamDataFromApp, onApplyBtnClickToFetchData }) => {
     setDisticts(uniqueDistrict);
   };
 
+  // DISTRICT NAME CHANGE CORRESPONDING VALUE STORE  `selectedDist` STATE
   const selectDistName = (e) => {
     setSelectedDist(e.target.value);
   };

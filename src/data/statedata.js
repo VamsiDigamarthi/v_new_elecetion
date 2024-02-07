@@ -196,7 +196,7 @@ export const stateWiseData = [
     ],
   },
   {
-    state: "Telengana",
+    state: "Telangana",
     dist: [
       {
         name: "Adilabad",
