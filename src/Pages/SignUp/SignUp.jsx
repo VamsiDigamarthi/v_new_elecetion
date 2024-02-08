@@ -209,6 +209,20 @@ const SignUp = () => {
     }
   };
 
+  const onChangeDistrictCoor = (e) => {
+    if (e.target.checked) {
+      setUser({
+        ...user,
+        role: e.target.value,
+      });
+    } else {
+      setUser({
+        ...user,
+        role: "",
+      });
+    }
+  };
+
   return (
     <>
       {sendOtpUiDesign ? (
@@ -497,6 +511,17 @@ const SignUp = () => {
               value={user.password}
             />
             <span>Password</span>
+          </div>
+          <div className="signup__as__dist__coor">
+            <input
+              id="role"
+              value="2"
+              onChange={onChangeDistrictCoor}
+              type="checkbox"
+            />
+            <lable htmlFor="role">
+              If You are District Coordinator Please Click CheckBox
+            </lable>
           </div>
           {/* SUBMITED THERE FORM */}
           <button

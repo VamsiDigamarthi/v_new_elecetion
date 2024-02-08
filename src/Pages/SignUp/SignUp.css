@@ -278,6 +278,14 @@ input[type="file"]:disabled {
   border: none;
 }
 
+.signup__as__dist__coor {
+  width: 100%;
+  display: flex;
+  gap: 0.2rem;
+  align-items: center;
+  /* border: 1px solid red; */
+}
+
 @media (max-width: 768px) {
   .otp__main__card {
     width: 95%;

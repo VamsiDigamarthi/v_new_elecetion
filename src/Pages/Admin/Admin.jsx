@@ -244,64 +244,60 @@ const Admin = () => {
       </div>
       {/* Static Tasks */}
       <div className="district__coor__static__task">
-        <div className="district__proceedings__card">
-          <div className="proceeding__card">
-            <h4>{firstSubTask.length > 0 && firstSubTask[0].task_heading}</h4>
-            <span>{firstTaskPercentage} %</span>
-          </div>
-          {firstSubTask.map((each, key) => (
-            <div
-              className="display__each__task new__added__admi__task"
-              key={key}
-            >
-              <span>{each.sub_task}</span>
-
-              {each.completed === "yes" ? (
-                <div className="task__completed__admin__data__card">
-                  <span>Task Completd</span>
-                </div>
-              ) : (
-                <div className="admin__takethe__input__from__task__card">
-                  <button onClick={() => onOwnTasdkCompletedFun(each?.id)}>
-                    Your Task is Completed Please Click to Confirm
-                  </button>
-                </div>
-              )}
-
-              {/* <span
-                className={`${
-                  each.completed !== "no"
-                    ? "task__completed"
-                    : "task__not__completed"
-                }`}
+        {firstSubTask?.length > 0 && (
+          <div className="district__proceedings__card">
+            <div className="proceeding__card">
+              <h4>{firstSubTask.length > 0 && firstSubTask[0].task_heading}</h4>
+              <span>{firstTaskPercentage} %</span>
+            </div>
+            {firstSubTask.map((each, key) => (
+              <div
+                className="display__each__task new__added__admi__task"
+                key={key}
               >
-                {each.completed !== "no" ? "Completed" : "Not Completed"}
-              </span> */}
-            </div>
-          ))}
-        </div>
-        <div className="district__proceedings__card">
-          <div className="proceeding__card">
-            <h5>{secondSubTask.length > 0 && secondSubTask[0].task_heading}</h5>
-            <span>{secondTaskPercentage} %</span>
+                <span>{each.sub_task}</span>
+
+                {each.completed === "yes" ? (
+                  <div className="task__completed__admin__data__card">
+                    <span>Task Completd</span>
+                  </div>
+                ) : (
+                  <div className="admin__takethe__input__from__task__card">
+                    <button onClick={() => onOwnTasdkCompletedFun(each?.id)}>
+                      Your Task is Completed Please Click to Confirm
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          {secondSubTask.map((each, key) => (
-            <div className="display__each__task" key={key}>
-              <span>{each.sub_task}</span>
-              {each.completed === "yes" ? (
-                <div className="task__completed__admin__data__card">
-                  <span>Task Completd</span>
-                </div>
-              ) : (
-                <div className="admin__takethe__input__from__task__card">
-                  <button onClick={() => onOwnTasdkCompletedFun(each?.id)}>
-                    Your Task is Completed Please Click to Confirm
-                  </button>
-                </div>
-              )}
+        )}
+        {secondSubTask?.length > 0 && (
+          <div className="district__proceedings__card">
+            <div className="proceeding__card">
+              <h5>
+                {secondSubTask.length > 0 && secondSubTask[0].task_heading}
+              </h5>
+              <span>{secondTaskPercentage} %</span>
             </div>
-          ))}
-        </div>
+            {secondSubTask.map((each, key) => (
+              <div className="display__each__task" key={key}>
+                <span>{each.sub_task}</span>
+                {each.completed === "yes" ? (
+                  <div className="task__completed__admin__data__card">
+                    <span>Task Completd</span>
+                  </div>
+                ) : (
+                  <div className="admin__takethe__input__from__task__card">
+                    <button onClick={() => onOwnTasdkCompletedFun(each?.id)}>
+                      Your Task is Completed Please Click to Confirm
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

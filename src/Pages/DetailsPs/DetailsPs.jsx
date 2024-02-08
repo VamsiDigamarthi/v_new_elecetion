@@ -211,35 +211,52 @@ const DetailsPs = () => {
             </div>
           </div>
           <div className="user__display__card">
-            {scoredUser
-              .filter((each) =>
-                filterValue === ""
-                  ? each
-                  : each.name.toLowerCase().includes(filterValue.toLowerCase())
-              )
-              .map((each, key) => (
-                <div
-                  key={key}
-                  onClick={() => onUserClickFetchTask(each)}
-                  className="each__user"
-                  style={{
-                    border:
-                      leftSideUserClickStoreId?.id === each.id
-                        ? "2px solid rgb(255, 187, 0)"
-                        : "1px solid rgb(221, 214, 214)",
-                    borderLeft:
-                      leftSideUserClickStoreId?.id === each.id &&
-                      "1px solid rgb(255, 187, 0)",
-                  }}
-                >
-                  <FaUserAlt size="25" color="rgb(221, 214, 214)" />
-                  <div>
-                    <span>{each.name}</span>
-                    <span>{each.phone}</span>
-                  </div>
-                  <BiMessageDetail size="20" color="rgb(221, 214, 214)" />
-                </div>
-              ))}
+            {scoreUser?.length > 0 ? (
+              <>
+                {scoredUser
+                  .filter((each) =>
+                    filterValue === ""
+                      ? each
+                      : each.name
+                          .toLowerCase()
+                          .includes(filterValue.toLowerCase())
+                  )
+                  .map((each, key) => (
+                    <div
+                      key={key}
+                      onClick={() => onUserClickFetchTask(each)}
+                      className="each__user"
+                      style={{
+                        border:
+                          leftSideUserClickStoreId?.id === each.id
+                            ? "2px solid rgb(255, 187, 0)"
+                            : "1px solid rgb(221, 214, 214)",
+                        borderLeft:
+                          leftSideUserClickStoreId?.id === each.id &&
+                          "1px solid rgb(255, 187, 0)",
+                      }}
+                    >
+                      <FaUserAlt size="25" color="rgb(221, 214, 214)" />
+                      <div>
+                        <span>{each.name}</span>
+                        <span>{each.phone}</span>
+                      </div>
+                      <BiMessageDetail size="20" color="rgb(221, 214, 214)" />
+                    </div>
+                  ))}
+              </>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <h2> No User Found</h2>
+              </div>
+            )}
           </div>
         </div>
         {/*  */}

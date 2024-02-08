@@ -186,7 +186,7 @@ export const Sidebar = ({ children, taskAssignAdminModalOpen }) => {
               </>
             )}
 
-            {UUU && (
+            {/* {UUU && (
               <>
                 {UUU[0]?.role === 2 && (
                   <Link to="/chat" className="all__links">
@@ -199,7 +199,7 @@ export const Sidebar = ({ children, taskAssignAdminModalOpen }) => {
                   </Link>
                 )}
               </>
-            )}
+            )} */}
 
             {UUU && (
               <>
